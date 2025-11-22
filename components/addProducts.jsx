@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { shopApi } from "../service/shopService";
 import {
   View,
   Text,
@@ -8,6 +9,9 @@ import {
   StyleSheet,
 } from "react-native";
 
+import { database } from "../firebase"; 
+import { ref, push } from "firebase/database";
+
 const AddProducts = () => {
   const [productos, setProductos] = useState([]);
   const [nombre, setNombre] = useState("");
@@ -15,7 +19,10 @@ const AddProducts = () => {
   const [cantidad, setCantidad] = useState("");
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
 
-  const handleAgregar = () => {
+  // 👉 Referencia correcta a Realtime Database
+  const categoriaRef = ref(database, "categoria");
+
+  const handleAgregar = async () => {
     if (!nombre.trim() || !precio || !cantidad) {
       alert("Por favor completa todos los campos");
       return;
@@ -27,6 +34,13 @@ const AddProducts = () => {
       precio: parseFloat(precio) || 0,
       cantidad: parseInt(cantidad, 10) || 0,
     };
+
+    try {
+      const referencia = await push(categoriaRef, nuevo);
+      console.log("Producto guardado con ID:", referencia.key);
+    } catch (error) {
+      console.error("Error al guardar el producto:", error);
+    }
 
     setProductos((p) => [nuevo, ...p]);
     setNombre("");
@@ -72,6 +86,7 @@ const AddProducts = () => {
             onChangeText={setCantidad}
             keyboardType="numeric"
           />
+
           <View style={styles.row}>
             <TouchableOpacity
               style={[styles.btn, styles.save]}
@@ -79,6 +94,7 @@ const AddProducts = () => {
             >
               <Text style={styles.btnText}>Guardar</Text>
             </TouchableOpacity>
+
             <TouchableOpacity
               style={[styles.btn, styles.cancel]}
               onPress={() => setMostrarFormulario(false)}
@@ -90,89 +106,55 @@ const AddProducts = () => {
       )}
 
       <FlatList
-        style={styles.list}
-        data={productos}
+        data={shopApi.useGetCategoriaQuery().data || []}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <View style={styles.item}>
-            <View>
-              <Text style={styles.name}>{item.nombre}</Text>
-              <Text style={styles.meta}>
-                ${item.precio} · qty {item.cantidad}
-              </Text>
-            </View>
+            <Text style={styles.itemText}>
+              {item.nombre} — ${item.precio} — x{item.cantidad}
+            </Text>
             <TouchableOpacity
-              style={styles.delete}
               onPress={() => handleEliminar(item.id)}
+              style={styles.deleteButton}
             >
-              <Text style={styles.deleteText}>Eliminar</Text>
+              <Text style={styles.deleteText}>❌</Text>
             </TouchableOpacity>
           </View>
         )}
-        ListEmptyComponent={<Text style={styles.empty}>No hay productos</Text>}
       />
     </View>
   );
 };
 
-export default AddProducts;
-
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    width: "100%",
-
-    justifyContent: "center", // centra verticalmente
-    alignItems: "center", // centra horizontalmente
-    backgroundColor: "#f5f5f5",
-    padding: 20,
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: "bold",
-    marginBottom: 20,
-    width: "100%",
-    textAlign: "center",
-  },
-  productItem: {
-    backgroundColor: "#fff",
-    padding: 15,
-    borderRadius: 10,
-    width: 280,
-    marginBottom: 10,
-    elevation: 3,
-    alignItems: "center",
-  },
-  name: {
-    fontWeight: "600",
-    fontSize: 16,
-  },
-  buttonContainer: {
-    marginTop: 20,
-    paddingVertical: 140,
-  },
-  formContainer: {
-    backgroundColor: "#fff",
-    padding: 20,
-    borderRadius: 10,
-    width: 300,
-    alignItems: "center",
-    elevation: 4,
-    marginTop: 20,
-  },
+  container: { flex: 1, padding: 20 },
+  title: { fontSize: 24, marginBottom: 10 },
+  primaryButton: { backgroundColor: "#007bff", padding: 10, borderRadius: 8 },
+  primaryText: { color: "#fff", textAlign: "center", fontSize: 18 },
+  form: { marginTop: 15 },
   input: {
     borderWidth: 1,
     borderColor: "#ccc",
-    borderRadius: 8,
     padding: 10,
-    marginVertical: 8,
-    width: "100%",
-    backgroundColor: "white",
+    marginBottom: 10,
+    borderRadius: 6,
   },
-  formButtons: {
+  row: { flexDirection: "row", justifyContent: "space-between" },
+  btn: { flex: 1, padding: 10, marginHorizontal: 5, borderRadius: 6 },
+  save: { backgroundColor: "green" },
+  cancel: { backgroundColor: "red" },
+  btnText: { textAlign: "center", color: "#fff", fontSize: 16 },
+  item: {
     flexDirection: "row",
     justifyContent: "space-between",
-    width: "100%",
+    padding: 12,
+    backgroundColor: "#f5f5f5",
     marginTop: 10,
+    borderRadius: 6,
   },
+  itemText: { fontSize: 16 },
+  deleteButton: { paddingHorizontal: 10 },
+  deleteText: { fontSize: 18 },
 });
+
+export default AddProducts;

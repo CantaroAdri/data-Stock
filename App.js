@@ -1,18 +1,25 @@
-import 'react-native-gesture-handler';
-import React from "react";
+import "react-native-gesture-handler";
+
 import { StyleSheet } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { NavigationContainer } from "@react-navigation/native";
-import Navigator from "./Navigation/Navigator";
+import Navigator from "./Navigation/TabNavigator"
+
+import { Provider } from "react-redux";
+import store from "./redux/store";
+import ScreenStart from "./pages/screenStart";
 
 export default function App() {
   return (
     <SafeAreaProvider>
-      <NavigationContainer>
-        <SafeAreaView style={styles.safeArea}>
-          <Navigator />
-        </SafeAreaView>
-      </NavigationContainer>
+      <Provider store={store}>
+        <NavigationContainer>
+          <SafeAreaView style={styles.safeArea}>
+            <Navigator/>
+          
+          </SafeAreaView>
+        </NavigationContainer>
+      </Provider>
     </SafeAreaProvider>
   );
 }
@@ -34,9 +41,9 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 16,
     textAlign: "center",
-    width: "100%", 
-     paddingHorizontal: 12,
-     flexWrap: "wrap",
+    width: "100%",
+    paddingHorizontal: 12,
+    flexWrap: "wrap",
   },
   menuContainer: {
     flexDirection: "row", // 👈 los botones uno al lado del otro
@@ -52,11 +59,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     borderRadius: 10,
     backgroundColor: "#dadadaff",
-    
   },
   activeButton: {
     backgroundColor: "#527dffff",
-    
   },
   buttonText: {
     justifyContent: "center",

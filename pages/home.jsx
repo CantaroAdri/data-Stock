@@ -1,21 +1,36 @@
 import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { Image } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  FlatList,
+  Image,
+} from "react-native";
+import { useGetCategoriaQuery } from "../service/shopService"; // 👈 IMPORTANTE
 import TabNavigator from "../Navigation/TabNavigator";
+import Contador from "../components/contador";
 
 const Home = ({ navigation }) => {
+  const { data: categorias, error, isLoading } = useGetCategoriaQuery();
+
+  if (isLoading) return <Text>Cargando productos...</Text>;
+  if (error) return <Text>Error al cargar productos</Text>;
+
   return (
     <View>
       <View style={styles.container}>
         <Text style={styles.title}>Home!</Text>
+
         <View style={styles.redes}>
           <Image source={require("../assets/Img/icons-facebook.png")} />
           <Image source={require("../assets/Img/icons-instagram.png")} />
           <Image source={require("../assets/Img/icons-whatsapp.png")} />
-          <TabNavigator />
+        
         </View>
       </View>
-      {/*   BOTONES DEL MENU */}
+
+      {/* BOTONES DEL MENU */}
       <View style={styles.menu}>
         <TouchableOpacity
           style={styles.button}
@@ -31,9 +46,22 @@ const Home = ({ navigation }) => {
           <Text style={styles.buttonText}>Ventas</Text>
         </TouchableOpacity>
       </View>
-      <Text style={styles.textoSecundario}>
-        Aquí se mostrarán los productos agregados.
-      </Text>
+
+      <Text style={styles.textoSecundario}>Productos disponibles:</Text>
+
+      {/*  LISTA DE PRODUCTOS (desde Firebase) */}
+      <FlatList
+        data={categorias}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <View style={styles.card}>
+            <Image source={{ uri: item.Image }} style={styles.productImg} />
+            <Text style={styles.productTitle}>{item.title}</Text>
+            <Contador id={item.id} />
+
+          </View>
+        )}
+      />
     </View>
   );
 };
@@ -42,30 +70,26 @@ export default Home;
 
 const styles = StyleSheet.create({
   container: {
-    justifyContent: "center", // centra verticalmente
-    alignItems: "center", // centra horizontalmente
-    backgroundColor: "rgba(238, 238, 255, 1)",
-    paddingVertical: 20,
+    flex: 1,
+    marginTop: 10,
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "#f9f9f9",
   },
   title: {
-    width: 100,
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: "bold",
-    marginBottom: 20, // espacio entre título y botón
+    marginBottom: 15,
+    justifyContent: "space-between", // 👈 mantiene todo arriba
+    alignItems: "center", // 👈 muy poco espacio debajo del título
+    textAlign: "center",
+    flexWrap: "wrap",
+    width: "100%",
   },
-
   redes: {
     flexDirection: "row",
     margin: 10,
     gap: 15,
-  },
-
-  textoSecundario: {
-    marginBottom: 5,
-    alignItems: "center",
-    left: 30,
-    fontSize: 16,
-    marginTop: 20,
   },
   menu: {
     flexDirection: "row", // para poner botones lado a lado
@@ -73,13 +97,35 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 10, // espacio horizontal entre botones (RN 0.71+)
     paddingVertical: 10,
-    marginTop: 20,
-    borderBottomColor: "#eee",
-    elevation: 4,
+    marginTop: 150,
+    borderColor: "#000000",
+    borderRadius: 15,
+    elevation: 10,
     borderBottomWidth: 2,
     backgroundColor: "#E8E8E8",
   },
-  buttonText: {
-    width: 100,
+
+  addButtonContainer: {
+    marginTop: 0, // 👈 elimina separación entre texto y botón
+  },
+
+  card: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 10,
+    backgroundColor: "#fff",
+    margin: 5,
+    borderRadius: 8,
+    elevation: 3,
+  },
+  productImg: {
+    width: 50,
+    height: 100,
+    marginRight: 15,
+    borderRadius: 5,
+  },
+  productTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
   },
 });
