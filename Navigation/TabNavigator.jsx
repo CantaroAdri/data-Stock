@@ -5,6 +5,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import CarritoScreen from "../components/carrito";
 import Home from "../pages/home";
 import Ventas from "../pages/ventas";
+import ProductList from "../pages/productList";
 
 const Tab = createBottomTabNavigator();
 
@@ -30,19 +31,19 @@ function TabNavigator() {
           tabBarLabel: "Inicio",
         }}
       />
-
+      
       <Tab.Screen
-        name="Ventas"
-        component={Ventas}
+        name="Listado"
+        component={ProductList}
         options={{
           tabBarIcon: ({ focused }) => (
             <MaterialIcons
-              name="attach-money"
+              name="add-to-queue"
               size={30}
               color={focused ? "#50AD5C" : "#999999ff"}
             />
           ),
-          tabBarLabel: "Ventas",
+          tabBarLabel: "Productos",
         }}
       />
 
@@ -58,6 +59,20 @@ function TabNavigator() {
             />
           ),
           tabBarLabel: "Carrito",
+        }}
+      />
+      <Tab.Screen
+        name="Contactos"
+        component={Ventas}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <MaterialIcons
+              name="location-pin"
+              size={30}
+              color={focused ? "#50AD5C" : "#999999ff"}
+            />
+          ),
+          tabBarLabel: "Contactos",
         }}
       />
     </Tab.Navigator>

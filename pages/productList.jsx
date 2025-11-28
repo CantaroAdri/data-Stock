@@ -1,10 +1,25 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import { Image } from "react-native";
-import TabNavigator from "../Navigation/TabNavigator";
+import { useGetProductsQuery } from "../redux/shopService";
 import AddProducts from "../components/addProducts";
 
-const ProductList = ({ navigation }) => {
+const ProductList = ({  }) => {
+  const { data: products, error, isLoading } = useGetProductsQuery();
+
+  if (isLoading) return <Text>Cargando productos...</Text>;
+  if (error) return <Text>Ocurrió un error: {error.message}</Text>;
+
+
+  <FlatList
+  data={Object.values(products || {})}
+  keyExtractor={(item, index) => index.toString()}
+  renderItem={({ item }) => (
+    <Text>{item.nombre}</Text>
+  )}
+/>
+
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Lista de Productos</Text>
@@ -12,25 +27,9 @@ const ProductList = ({ navigation }) => {
         <Image source={require("../assets/Img/icons-facebook.png")} />
         <Image source={require("../assets/Img/icons-instagram.png")} />
         <Image source={require("../assets/Img/icons-whatsapp.png")} />
-        <TabNavigator />
       </View>
-
+     
       <AddProducts />
-
-      <View style={styles.menu}>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate("Home")}
-        >
-          <Text style={styles.buttonText}>Home</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate("Ventas")}
-        >
-          <Text style={styles.buttonText}>Ventas</Text>
-        </TouchableOpacity>
-      </View>
     </View>
   );
 };
