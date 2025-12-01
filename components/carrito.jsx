@@ -1,5 +1,5 @@
 
-import { usePostCategoriaMutation } from '../service/shopService';
+import { usePostCategoriaMutation } from '../redux/shopService';
 
 
 

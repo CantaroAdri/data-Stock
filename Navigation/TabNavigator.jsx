@@ -6,6 +6,7 @@ import CarritoScreen from "../components/carrito";
 import Home from "../pages/home";
 import Ventas from "../pages/ventas";
 import ProductList from "../pages/productList";
+import ScreenContacto from "../pages/ScreenContacto";
 
 const Tab = createBottomTabNavigator();
 
@@ -48,31 +49,32 @@ function TabNavigator() {
       />
 
       <Tab.Screen
-        name="Carrito"
-        component={CarritoScreen}
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <MaterialIcons
-              name="shopping-cart"
-              size={30}
-              color={focused ? "#50AD5C" : "#999999ff"}
-            />
-          ),
-          tabBarLabel: "Carrito",
-        }}
-      />
-      <Tab.Screen
         name="Contactos"
-        component={Ventas}
+        component={ScreenContacto}
         options={{
           tabBarIcon: ({ focused }) => (
             <MaterialIcons
-              name="location-pin"
+             name="location-pin"
               size={30}
               color={focused ? "#50AD5C" : "#999999ff"}
             />
           ),
           tabBarLabel: "Contactos",
+        }}
+      />
+      <Tab.Screen
+        name="Carrito"
+        component={Ventas}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <MaterialIcons
+            name="shopping-cart"
+              
+              size={30}
+              color={focused ? "#50AD5C" : "#999999ff"}
+            />
+          ),
+          tabBarLabel: "Carrito",
         }}
       />
     </Tab.Navigator>

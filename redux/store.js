@@ -1,5 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { shopApi } from "../service/shopService";
+import { shopApi } from "../redux/shopService";
 import { authApi } from "./authService";
 import authReducer from "./authSlice";
 import contadorReducer from "./contadorSlice";

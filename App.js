@@ -3,11 +3,11 @@ import "react-native-gesture-handler";
 import { StyleSheet } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { NavigationContainer } from "@react-navigation/native";
-import Navigator from "./Navigation/TabNavigator"
+import ScreenStart from "./pages/screenStart";
 
 import { Provider } from "react-redux";
 import store from "./redux/store";
-import ScreenStart from "./pages/screenStart";
+
 
 export default function App() {
   return (
@@ -15,7 +15,7 @@ export default function App() {
       <Provider store={store}>
         <NavigationContainer>
           <SafeAreaView style={styles.safeArea}>
-            <Navigator/>
+            <ScreenStart/>
           
           </SafeAreaView>
         </NavigationContainer>

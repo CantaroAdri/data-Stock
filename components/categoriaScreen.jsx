@@ -1,5 +1,5 @@
 import { StyleSheet, Text, FlatList, Image, Pressable } from "react-native";
-import { useGetCategoriaQuery } from "../service/shopService";
+import { useGetCategoriaQuery } from "../redux/shopService";
 import Contador from "../components/contador";
 
 

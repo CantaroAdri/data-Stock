@@ -33,7 +33,7 @@ const LoginScreen = ({ navigation }) => {
   });
 
 return (
-  <View>
+  <View style={styles.containerMain}>
     <View style={styles.container}>
       <Text style={styles.title}>Data Stock</Text>
       <Text style={styles.subtitle}>Inicia sesión para continuar</Text>
@@ -41,12 +41,14 @@ return (
         onChangeText={(text) => setEmail(text)}
         value={email}
         placeholder="Email"
+        placeholderTextColor="#ffffff"
         style={styles.input}
       />
       <TextInput
         onChangeText={(text) => setPassword(text)}
         value={password}
         placeholder="password"
+        placeholderTextColor="#ffffff"
         style={styles.input}
       />
     </View>
@@ -67,13 +69,14 @@ return (
 export default LoginScreen;
 
 const styles = StyleSheet.create({
-  containerMain: {
+  containerMain:{
+    backgroundColor: "#790129ff",
+    flex: 0.5,
+  },
+  container: {
     flex: 1,
     paddingTop: 40,
     alignItems: "center",
-  },
-
-  container: {
     alignItems: "center",
     width: "100%",
   },
@@ -82,11 +85,15 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: "bold",
     marginBottom: 10,
+    color: "#ffffff",
+
   },
 
   subtitle: {
     fontSize: 16,
     marginBottom: 20,
+    color: "#ffffff",
+
   },
 
   input: {
@@ -95,19 +102,24 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 10,
     borderRadius: 8,
+    borderColor: "#ffffff",
+    color: "#ffffff",
   },
 
   containerButton: {
-    flexDirection: "row",
-    marginTop: 10,
+    flexDirection: "column",
+    marginTop: 50,
+    alignItems: "center",
   },
 
   textButton: {
     fontSize: 14,
+    color: "#ffffff",
+    
   },
 
   textButtonLink: {
-    color: "blue",
+    color: "ffc107",
     marginLeft: 4,
   },
 

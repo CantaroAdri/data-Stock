@@ -1,84 +1,160 @@
-// 
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
-  View, Text, TextInput, TouchableOpacity, StyleSheet
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  FlatList,
+  StyleSheet,
 } from "react-native";
 
-import {
-  useAddCategoriaMutation,
-  useGetCategoriaQuery,
-  useDeleteCategoriaMutation,
-} from "../service/shopService";
+import { database } from "../firebase";
+import { ref, push, onValue, remove } from "firebase/database";
 
-const AddProducts = () => {
+export default function AddProducts() {
+  const [productos, setProductos] = useState([]);
   const [nombre, setNombre] = useState("");
   const [precio, setPrecio] = useState("");
   const [cantidad, setCantidad] = useState("");
+  const [mostrarFormulario, setMostrarFormulario] = useState(false);
 
-  const { data: categorias } = useGetCategoriaQuery();
-  const [addCategoria] = useAddCategoriaMutation();
-  const [deleteCategoria] = useDeleteCategoriaMutation();
+  const categoriaRef = ref(database, "categoria/");
 
-  const handleAgregar = async () => {
-    if (!nombre.trim()) return;
-
-    await addCategoria({
-      nombre,
-      precio,
-      cantidad,
+  // 👉 LEER PRODUCTOS EN TIEMPO REAL
+  useEffect(() => {
+    onValue(categoriaRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const lista = Object.keys(data).map((id) => ({
+          id,
+          ...data[id],
+        }));
+        setProductos(lista.reverse());
+      }
     });
+  }, []);
+
+  // 👉 GUARDAR PRODUCTO
+  const handleAgregar = async () => {
+    if (!nombre.trim() || !precio || !cantidad) {
+      alert("Por favor completa todos los campos");
+      return;
+    }
+
+    const nuevo = {
+      nombre,
+      precio: parseFloat(precio),
+      cantidad: parseInt(cantidad),
+    };
+
+    await push(categoriaRef, nuevo);
 
     setNombre("");
     setPrecio("");
     setCantidad("");
+    setMostrarFormulario(false);
+  };
+
+  // 👉 ELIMINAR PRODUCTO
+  const handleEliminar = (id) => {
+    remove(ref(database, "categoria/" + id));
   };
 
   return (
-    <View>
-      <Text style={styles.title}>Agregar Producto</Text>
+    <View style={styles.container}>
+      <Text style={styles.title}>Agregar / Listado</Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Nombre"
-        value={nombre}
-        onChangeText={setNombre}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Precio"
-        value={precio}
-        onChangeText={setPrecio}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Cantidad"
-        value={cantidad}
-        onChangeText={setCantidad}
-      />
+      {!mostrarFormulario ? (
+        <TouchableOpacity
+          style={styles.primaryButton}
+          onPress={() => setMostrarFormulario(true)}
+        >
+          <Text style={styles.primaryText}>➕ Crear producto</Text>
+        </TouchableOpacity>
+      ) : (
+        <View style={styles.form}>
+          <TextInput
+            style={styles.input}
+            placeholder="Nombre"
+            value={nombre}
+            onChangeText={setNombre}
+          />
 
-      <TouchableOpacity style={styles.btn} onPress={handleAgregar}>
-        <Text style={styles.btnText}>Guardar</Text>
-      </TouchableOpacity>
+          <TextInput
+            style={styles.input}
+            placeholder="Precio"
+            value={precio}
+            onChangeText={setPrecio}
+            keyboardType="numeric"
+          />
 
-      {/* LISTADO */}
-      {categorias?.map((item) => (
-        <View key={item.id} style={styles.item}>
-          <Text>{item.nombre} — ${item.precio} x{item.cantidad}</Text>
-          <TouchableOpacity onPress={() => deleteCategoria(item.id)}>
-            <Text>❌</Text>
-          </TouchableOpacity>
+          <TextInput
+            style={styles.input}
+            placeholder="Cantidad"
+            value={cantidad}
+            onChangeText={setCantidad}
+            keyboardType="numeric"
+          />
+
+          <View style={styles.row}>
+            <TouchableOpacity style={[styles.btn, styles.save]} onPress={handleAgregar}>
+              <Text style={styles.btnText}>Guardar</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.btn, styles.cancel]}
+              onPress={() => setMostrarFormulario(false)}
+            >
+              <Text style={styles.btnText}>Cancelar</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      ))}
+      )}
+
+      <FlatList
+        data={productos}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <View style={styles.item}>
+            <Text style={styles.itemText}>
+              {item.nombre} — ${item.precio} — x{item.cantidad}
+            </Text>
+
+            <TouchableOpacity onPress={() => handleEliminar(item.id)}>
+              <Text style={{ fontSize: 22 }}>❌</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      />
     </View>
   );
-};
-
-export default AddProducts;
+}
 
 const styles = StyleSheet.create({
-  input: { borderWidth: 1, marginBottom: 10, padding: 8 },
-  btn: { backgroundColor: "green", padding: 10, marginVertical: 10 },
-  btnText: { color: "#fff", textAlign: "center" },
-  item: { flexDirection: "row", justifyContent: "space-between", marginTop: 10 },
+  container: { flex: 1, padding: 20 },
+  title: { fontSize: 24, marginBottom: 10, fontWeight: "bold" },
+  primaryButton: { backgroundColor: "#007bff", padding: 10, borderRadius: 8 },
+  primaryText: { color: "#fff", textAlign: "center", fontSize: 18 },
+  form: { marginTop: 15 },
+  input: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    padding: 10,
+    marginBottom: 10,
+    borderRadius: 6,
+  },
+  row: { flexDirection: "row", justifyContent: "space-between" },
+  btn: { flex: 1, padding: 10, marginHorizontal: 5, borderRadius: 6 },
+  save: { backgroundColor: "green" },
+  cancel: { backgroundColor: "red" },
+  btnText: { textAlign: "center", color: "#fff", fontSize: 16 },
+  item: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    padding: 12,
+    backgroundColor: "#f5f5f5",
+    marginTop: 10,
+    borderRadius: 6,
+  },
+  itemText: { fontSize: 16 },
 });
