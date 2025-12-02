@@ -3,12 +3,14 @@ import { shopApi } from "../redux/shopService";
 import { authApi } from "./authService";
 import authReducer from "./authSlice";
 import contadorReducer from "./contadorSlice";
+import carritoReducer from "./carritoSlice";
 
 const store = configureStore({
   reducer: {
     [shopApi.reducerPath]: shopApi.reducer,
     [authApi.reducerPath]: authApi.reducer,
     contador: contadorReducer,
+    carritoReducer: carritoReducer,
     authReducer: authReducer,
   },
   middleware: (getDefault) =>

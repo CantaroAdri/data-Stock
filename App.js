@@ -15,8 +15,7 @@ export default function App() {
       <Provider store={store}>
         <NavigationContainer>
           <SafeAreaView style={styles.safeArea}>
-            <ScreenStart/>
-          
+            <ScreenStart/>          
           </SafeAreaView>
         </NavigationContainer>
       </Provider>

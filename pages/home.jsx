@@ -1,22 +1,39 @@
 import {
   View,
   Text,
-  TouchableOpacity,
+
   StyleSheet,
   FlatList,
   Image,
 } from "react-native";
-// import { useGetCategoriaQuery } from "../redux/shopService";
+
 import Contador from "../components/contador";
 import { useProductos } from "../redux/useProductos";
 
 const Home = ({ navigation }) => {
-  // const { data: categorias, error, isLoading } = useGetCategoriaQuery();
-
-  if (isLoading) return <Text>Cargando productos...</Text>;
-  if (error) return <Text>Error al cargar productos</Text>;
-
   const { productos, isLoading, error } = useProductos();
+
+  if (isLoading)
+    return (
+      <View style={styles.loadingContainer}>
+        <Text style={styles.loadingText}>Cargando productos...</Text>
+      </View>
+    );
+  if (error)
+    return (
+      <View style={styles.loadingContainer}>
+        <Text style={styles.errorText}>
+          Error al cargar productos: {error.message || "Error desconocido"}
+        </Text>
+      </View>
+    );
+  if (productos.length === 0) {
+    return (
+      <View style={styles.loadingContainer}>
+        <Text style={styles.loadingText}>No hay productos disponibles.</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -35,14 +52,16 @@ const Home = ({ navigation }) => {
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <View style={styles.card}>
-            <Text style={styles.productTitle}>{item.nombre}</Text>
-            <Text>Precio: ${item.precio}</Text>
-            <Text>Cantidad: {item.cantidad}</Text>
-            <Contador id={item.id} />
+            <Text style={[styles.productTitle, { color: "black" }]}>
+              {item.nombre}
+            </Text>
+            <Text style={{ color: "black" }}>Precio: ${item.precio}</Text>
+            <Text style={{ color: "black" }}>Cantidad: {item.cantidad || 0}</Text>
+            <Contador item={item} />
           </View>
         )}
         numColumns={2}
-        style={styles.list} //
+        style={styles.list} 
         contentContainerStyle={styles.listContent}
       />
     </View>
@@ -81,16 +100,18 @@ const styles = StyleSheet.create({
   },
 
   card: {
+    flex: 1,
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "space-between",
-    width: "47%",
     padding: 10,
     backgroundColor: "#fff",
     margin: 5,
     borderRadius: 8,
     elevation: 3,
-    width: "47%",
+
+    borderWidth: 1, 
+    borderColor: "red",
   },
 
   productTitle: {
@@ -102,8 +123,10 @@ const styles = StyleSheet.create({
   },
 
   listContent: {
-    justifyContent: "center",
     alignItems: "center",
     width: "100%",
+    paddingHorizontal: 5,
+    alignItems: "stretch",
+    justifyContent: "space-between",
   },
 });

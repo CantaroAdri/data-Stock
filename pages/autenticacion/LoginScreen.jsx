@@ -18,59 +18,61 @@ const LoginScreen = ({ navigation }) => {
   const [password, setPassword] = useState("");
 
   const dispatch = useDispatch();
-  const [login, result] = useLoginMutation(); 
+  const [login, result] = useLoginMutation();
 
   const onSubmit = () => {
     login({ email, password });
-    alert("Completa todos los campos");
   };
   useEffect(() => {
     if (result.status == "fulfilled") {
+
       dispatch(setUser(result.data));
     } else if (result.status == "rejected") {
       alert("Error al registrar el usuario");
     }
   });
 
-return (
-  <View style={styles.containerMain}>
-    <View style={styles.container}>
-      <Text style={styles.title}>Data Stock</Text>
-      <Text style={styles.subtitle}>Inicia sesión para continuar</Text>
-      <TextInput
-        onChangeText={(text) => setEmail(text)}
-        value={email}
-        placeholder="Email"
-        placeholderTextColor="#ffffff"
-        style={styles.input}
-      />
-      <TextInput
-        onChangeText={(text) => setPassword(text)}
-        value={password}
-        placeholder="password"
-        placeholderTextColor="#ffffff"
-        style={styles.input}
-      />
-    </View>
+  return (
+    <View style={styles.containerMain}>
+      <View style={styles.container}>
+        <Text style={styles.title}>Data Stock</Text>
+        <Text style={styles.subtitle}>Inicia sesión para continuar</Text>
+        <TextInput
+          onChangeText={(text) => setEmail(text)}
+          value={email}
+          placeholder="Email"
+          placeholderTextColor="#ffffff"
+          style={styles.input}
+        />
+        <TextInput
+          onChangeText={(text) => setPassword(text)}
+          value={password}
+          placeholder="password"
+          placeholderTextColor="#ffffff"
+          style={styles.input}
+        />
+      </View>
 
-    <View style={styles.containerButton}>
-      <Text style={styles.textButton}>No tiene cuenta?</Text>
-      <Pressable onPress={() => navigation.navigate("Register")}>
-        <Text style={styles.textButtonLink}>Registrarse</Text>
+      <View style={styles.containerButton}>
+        <Text style={styles.textButton}>No tiene cuenta?</Text>
+        <Pressable onPress={() => navigation.navigate("Register")}>
+          <Text style={styles.textButtonLink}>Registrarse</Text>
+        </Pressable>
+      </View>
+      <Pressable style={styles.buttonRegister} onPress={onSubmit}>
+        <Text>Iniciar</Text>
       </Pressable>
     </View>
-    <Pressable style={styles.buttonRegister} onPress={onSubmit}>
-      <Text>Iniciar</Text>
-    </Pressable>
-  </View>
-);
+  );
 };
 
 export default LoginScreen;
 
 const styles = StyleSheet.create({
-  containerMain:{
+  containerMain: {
     backgroundColor: "#790129ff",
+    paddingTop: 40,
+    alignItems: "center",
     flex: 0.5,
   },
   container: {
@@ -85,15 +87,13 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: "bold",
     marginBottom: 10,
-    color: "#ffffff",
-
+    color: "lightblue",
   },
 
   subtitle: {
     fontSize: 16,
     marginBottom: 20,
-    color: "#ffffff",
-
+    color: "lightblue",
   },
 
   input: {
@@ -115,11 +115,10 @@ const styles = StyleSheet.create({
   textButton: {
     fontSize: 14,
     color: "#ffffff",
-    
   },
 
   textButtonLink: {
-    color: "ffc107",
+    color: "lightblue",
     marginLeft: 4,
   },
 

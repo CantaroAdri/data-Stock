@@ -1,8 +1,8 @@
-import React from "react";
+
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { StyleSheet } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
-import CarritoScreen from "../components/carrito";
+
 import Home from "../pages/home";
 import Ventas from "../pages/ventas";
 import ProductList from "../pages/productList";

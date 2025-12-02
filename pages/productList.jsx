@@ -47,8 +47,8 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: "bold",
     marginBottom: 15,
-    justifyContent: "space-between", // 👈 mantiene todo arriba
-    alignItems: "center", // 👈 muy poco espacio debajo del título
+    justifyContent: "space-between", 
+    alignItems: "center", 
     textAlign: "center",
     flexWrap: "wrap",
     width: "100%",
@@ -59,10 +59,10 @@ const styles = StyleSheet.create({
     gap: 15,
   },
   menu: {
-    flexDirection: "row", // para poner botones lado a lado
+    flexDirection: "row", 
     justifyContent: "center",
     alignItems: "center",
-    gap: 10, // espacio horizontal entre botones (RN 0.71+)
+    gap: 10, 
     paddingVertical: 10,
     marginTop: 20,
     borderColor: "#000000",
@@ -73,6 +73,6 @@ const styles = StyleSheet.create({
   },
 
   addButtonContainer: {
-    marginTop: 0, // 👈 elimina separación entre texto y botón
+    marginTop: 0, 
   },
 });

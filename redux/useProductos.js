@@ -5,8 +5,8 @@ import { database } from "../firebase";
 import React, { useState, useEffect } from "react";
 export function useProductos() {
 const [productos, setProductos] = useState([]);
-const [isLoading, setIsLoading] = useState(true); // 👈 Añadir estado de carga
-  const [error, setError] = useState(null); // 👈 Añadir estado de error
+const [isLoading, setIsLoading] = useState(true); 
+  const [error, setError] = useState(null); 
 
  useEffect(() => {
  setIsLoading(true);
@@ -14,16 +14,16 @@ const [isLoading, setIsLoading] = useState(true); // 👈 Añadir estado de carg
 
   const unsub = onValue(productosRef, snapshot => {
    const data = snapshot.val();
-      setError(null); // Resetear error si hay data
+      setError(null); 
    if (data) {
     setProductos(
      Object.keys(data).map(id => ({ id, ...data[id] })).reverse()
     );
    } else {
-          setProductos([]); // Si no hay data, lista vacía
+          setProductos([]); 
       }
-      setIsLoading(false); // La carga terminó
-  }, (err) => { // Manejo de errores
+      setIsLoading(false); 
+  }, (err) => { 
         setError(err);
         setIsLoading(false);
     });
@@ -31,5 +31,5 @@ const [isLoading, setIsLoading] = useState(true); // 👈 Añadir estado de carg
   return () => unsub();
  }, []);
 
- return { productos, isLoading, error }; // 👈 Retornar los tres estados
+ return { productos, isLoading, error }; 
 }

@@ -30,7 +30,7 @@ const PreMap = ({ location }) => {
   let mapImageUrl = "";
 
   if (hasLocation) {
-    // 3. CONSTRUIR la URL con las coordenadas reales
+    
     const { lat, lon } = location;
     const size = "300x300";
     const zoom = 15;
@@ -60,7 +60,7 @@ export default PreMap;
 
 const styles = StyleSheet.create({
   mapContainer: {
-    // Contenedor para el mapa/ícono
+   
     alignItems: "center",
     marginVertical: 15,
   },

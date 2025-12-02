@@ -1,9 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const carritoSlise = createSlice({
+const carritoSlice = createSlice({
   name: "carrito",
   initialState: {
-    items: {}   // objeto tipo { id: { ...producto, cantidad: n } }
+    items: {}   
   },
   reducers: {
     agregarAlCarrito: (state, action) => {
@@ -31,6 +31,6 @@ const carritoSlise = createSlice({
   }
 });
 
-export const { agregarAlCarrito, quitarDelCarrito } = carritoSlise.actions;
-export default carritoSlise.reducer;
+export const { agregarAlCarrito, quitarDelCarrito } = carritoSlice.actions;
+export default carritoSlice.reducer;
 

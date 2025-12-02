@@ -17,7 +17,7 @@ export const shopApi = createApi({
 
     postCategoria: builder.mutation({
       query: (orderData) => ({
-        url: "orders.json", // Cambiado a 'orders.json' para seguir la lógica de un pedido
+        url: "orders.json", 
         method: "POST",
         body: orderData,
       }),

@@ -20,7 +20,7 @@ export default function AddProducts() {
 
   const categoriaRef = ref(database, "categoria/");
 
-  // 👉 LEER PRODUCTOS EN TIEMPO REAL
+  // LEE PRODUCTOS EN TIEMPO REAL
   useEffect(() => {
     onValue(categoriaRef, (snapshot) => {
       const data = snapshot.val();
@@ -34,7 +34,7 @@ export default function AddProducts() {
     });
   }, []);
 
-  // 👉 GUARDAR PRODUCTO
+  // GUARDAR PRODUCTO
   const handleAgregar = async () => {
     if (!nombre.trim() || !precio || !cantidad) {
       alert("Por favor completa todos los campos");
@@ -55,7 +55,7 @@ export default function AddProducts() {
     setMostrarFormulario(false);
   };
 
-  // 👉 ELIMINAR PRODUCTO
+  // ELIMINAR PRODUCTO
   const handleEliminar = (id) => {
     remove(ref(database, "categoria/" + id));
   };

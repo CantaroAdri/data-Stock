@@ -132,25 +132,25 @@ export default ScreenContacto;
 
 const styles = StyleSheet.create({
     container: {
-        flex: null, 
-        paddingBottom: 20, 
-        marginTop: 10,
-        alignItems: "center",
-        backgroundColor: "#f9f9f9",
-        width: "100%",
-    },
+     flex: null, 
+     paddingBottom: 20, 
+     marginTop: 10,
+     alignItems: "center",
+     backgroundColor: "#f9f9f9",
+     width: "100%",
+  },
     contentArea: {
         flex: 1,
         alignItems: 'center',
         padding: 10,
     },
     title: {
-        fontSize: 22,
-        fontWeight: "bold",
-        marginBottom: 15,
-        textAlign: "center",
-        width: "100%",
-    },
+     fontSize: 22,
+     fontWeight: "bold",
+     marginBottom: 15,
+     textAlign: "center",
+     width: "100%",
+  },
     subTitle: {
         fontSize: 18,
         fontWeight: 'bold',
@@ -162,18 +162,20 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     redes: {
-        width: "100%",
-        flexDirection: "row",
-        justifyContent: "center",
-        margin: 10,
-        gap: 15,
-    },
-    // Estilos para la imagen y cámara
+     width: "100%",
+     flexDirection: "row",
+     justifyContent: "center",
+     margin: 10,
+     gap: 15,
+   },
+   
     imageContainer: {
-        width: 120,
-        height: 120,
+        width: 80,
+        height: 80,
         borderRadius: 60,
-        backgroundColor: '#eee',
+        backgroundColor: '#790129ff',
+       
+        elevation: 5,
         justifyContent: 'center',
         alignItems: 'center',
         marginBottom: 10,
@@ -182,11 +184,12 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
         borderRadius: 60,
+        
     },
     cameraButton: {
         position: 'absolute',
-        top: 105,
-        left: '55%', // Ajusta la posición del botón de la cámara
+        top: 65,
+        left: '55%',
         backgroundColor: '#007bff',
         borderRadius: 25,
         padding: 8,

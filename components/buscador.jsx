@@ -6,7 +6,7 @@ const Buscador = ({ placeholder }) => {
   const [error, setError] = useState("");
 
   const validarTexto = (input) => {
-    setTexto(input); // actualiza siempre
+    setTexto(input); 
     if (!input || input.trim() === "") {
       setError("El campo de búsqueda no puede estar vacío.");
       return false;

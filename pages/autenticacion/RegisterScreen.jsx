@@ -47,6 +47,7 @@ const RegisterScreen = ({ navigation }) => {
           onChangeText={setEmail}
           value={email}
           placeholder="Email"
+          placeholderTextColor="#ffffff"
           style={styles.input}
         />
 
@@ -54,6 +55,7 @@ const RegisterScreen = ({ navigation }) => {
           onChangeText={setPassword}
           value={password}
           placeholder="Password"
+          placeholderTextColor="#ffffff"
           style={styles.input}
         />
 
@@ -61,6 +63,7 @@ const RegisterScreen = ({ navigation }) => {
           onChangeText={setConfirmPassword}
           value={confirmPassword}
           placeholder="Repetir Password"
+          placeholderTextColor="#ffffff"
           style={styles.input}
         />
       </View>
@@ -71,10 +74,11 @@ const RegisterScreen = ({ navigation }) => {
           <Text style={styles.textButtonLink}>Inicia Sesión</Text>
         </Pressable>
       </View>
-
-      <Pressable style={styles.buttonRegister} onPress={onSubmit}>
-        <Text>Crear Cuenta</Text>
-      </Pressable>
+      <View>
+        <Pressable style={styles.buttonRegister} onPress={onSubmit}>
+          <Text>Crear Cuenta</Text>
+        </Pressable>
+      </View>
     </View>
   );
 };
@@ -83,9 +87,10 @@ export default RegisterScreen;
 
 const styles = StyleSheet.create({
   containerMain: {
-    flex: 1,
+    flex: 0.5,
     paddingTop: 40,
     alignItems: "center",
+    backgroundColor: "#790129ff",
   },
 
   container: {
@@ -97,11 +102,14 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: "bold",
     marginBottom: 10,
+    color: "lightblue",
   },
 
   subtitle: {
     fontSize: 16,
     marginBottom: 20,
+
+    color: "lightblue",
   },
 
   input: {
@@ -110,6 +118,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 10,
     borderRadius: 8,
+    borderColor: "#ffffff",
+    color: "#ffffff",
   },
 
   containerButton: {
@@ -118,11 +128,13 @@ const styles = StyleSheet.create({
   },
 
   textButton: {
+    color: "ffc107",
+
     fontSize: 14,
   },
 
   textButtonLink: {
-    color: "blue",
+    color: "lightblue",
     marginLeft: 4,
   },
 
