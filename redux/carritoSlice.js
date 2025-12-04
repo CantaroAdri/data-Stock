@@ -1,4 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { descontarStock, sumarStock } from "./stockSlice";
+
 
 const carritoSlice = createSlice({
   name: "carrito",
@@ -30,6 +32,16 @@ const carritoSlice = createSlice({
     }
   }
 });
+
+export const agregarConStock = (producto) => (dispatch) => {
+  dispatch(agregarAlCarrito(producto));
+  dispatch(descontarStock(producto.id));
+};
+
+export const quitarConStock = (id) => (dispatch) => {
+  dispatch(quitarDelCarrito(id));
+  dispatch(sumarStock(id));
+};
 
 export const { agregarAlCarrito, quitarDelCarrito } = carritoSlice.actions;
 export default carritoSlice.reducer;

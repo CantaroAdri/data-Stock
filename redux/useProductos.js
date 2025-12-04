@@ -1,35 +1,36 @@
-// useProductos.js
-// ...
-import { ref, onValue } from "firebase/database";
-import { database } from "../firebase";
-import React, { useState, useEffect } from "react";
-export function useProductos() {
-const [productos, setProductos] = useState([]);
-const [isLoading, setIsLoading] = useState(true); 
-  const [error, setError] = useState(null); 
+import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { setProductos } from "../redux/stockSlice"; 
 
- useEffect(() => {
- setIsLoading(true);
- const productosRef = ref(database, "categoria/");
+export default function useProductos() {
+  const [data, setData] = useState(null);
+  const dispatch = useDispatch();
 
-  const unsub = onValue(productosRef, snapshot => {
-   const data = snapshot.val();
-      setError(null); 
-   if (data) {
-    setProductos(
-     Object.keys(data).map(id => ({ id, ...data[id] })).reverse()
-    );
-   } else {
-          setProductos([]); 
+  useEffect(() => {
+    const fetchProductos = async () => {
+      try {
+        const res = await fetch("tu_url_de_firebase.json");
+        const json = await res.json();
+
+        if (json) {
+          const lista = Object.keys(json).map(id => ({
+            id,
+            ...json[id],
+          }));
+
+       
+          dispatch(setProductos(lista));
+
+          setData(lista);
+        }
+
+      } catch (error) {
+        console.log("Error cargando productos", error);
       }
-      setIsLoading(false); 
-  }, (err) => { 
-        setError(err);
-        setIsLoading(false);
-    });
+    };
 
-  return () => unsub();
- }, []);
+    fetchProductos();
+  }, []);
 
- return { productos, isLoading, error }; 
+  return data;
 }

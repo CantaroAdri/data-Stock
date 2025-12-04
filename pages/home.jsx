@@ -1,33 +1,52 @@
+import React, { useEffect } from "react";
 import {
   View,
   Text,
-
   StyleSheet,
   FlatList,
   Image,
 } from "react-native";
 
+import { useDispatch, useSelector } from "react-redux";
+import { setProductos } from "../redux/stockSlice";
+import { ref, onValue } from "firebase/database";
+import { database } from "../firebase";
 import Contador from "../components/contador";
-import { useProductos } from "../redux/useProductos";
 
-const Home = ({ navigation }) => {
-  const { productos, isLoading, error } = useProductos();
+const Home = () => {
+  const dispatch = useDispatch();
 
-  if (isLoading)
+  
+  const lista = useSelector((state) => state.productos.lista);
+
+  
+  useEffect(() => {
+    const productosRef = ref(database, "categoria/");
+
+    const unsubscribe = onValue(productosRef, (snapshot) => {
+      const data = snapshot.val();
+
+      const listaFinal = data
+        ? Object.keys(data).map((id) => ({ id, ...data[id] }))
+        : [];
+
+      dispatch(setProductos(listaFinal));
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+
+
+  if (!lista) {
     return (
       <View style={styles.loadingContainer}>
         <Text style={styles.loadingText}>Cargando productos...</Text>
       </View>
     );
-  if (error)
-    return (
-      <View style={styles.loadingContainer}>
-        <Text style={styles.errorText}>
-          Error al cargar productos: {error.message || "Error desconocido"}
-        </Text>
-      </View>
-    );
-  if (productos.length === 0) {
+  }
+
+  if (lista.length === 0) {
     return (
       <View style={styles.loadingContainer}>
         <Text style={styles.loadingText}>No hay productos disponibles.</Text>
@@ -35,6 +54,7 @@ const Home = ({ navigation }) => {
     );
   }
 
+  
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Home!</Text>
@@ -44,25 +64,30 @@ const Home = ({ navigation }) => {
         <Image source={require("../assets/Img/icons-instagram.png")} />
         <Image source={require("../assets/Img/icons-whatsapp.png")} />
       </View>
+
       <Text style={styles.textoSecundario}>Productos disponibles:</Text>
 
-      {/*  LISTA DE PRODUCTOS (desde Firebase) */}
       <FlatList
-        data={productos}
+        data={lista}
         keyExtractor={(item) => item.id}
+        numColumns={2}
+        style={styles.list}
+        contentContainerStyle={styles.listContent}
         renderItem={({ item }) => (
           <View style={styles.card}>
             <Text style={[styles.productTitle, { color: "black" }]}>
               {item.nombre}
             </Text>
+
             <Text style={{ color: "black" }}>Precio: ${item.precio}</Text>
-            <Text style={{ color: "black" }}>Cantidad: {item.cantidad || 0}</Text>
+
+            <Text style={{ color: "black" }}>
+              En Stock: {item.cantidad || 0}
+            </Text>
+
             <Contador item={item} />
           </View>
         )}
-        numColumns={2}
-        style={styles.list} 
-        contentContainerStyle={styles.listContent}
       />
     </View>
   );
@@ -70,11 +95,11 @@ const Home = ({ navigation }) => {
 
 export default Home;
 
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginTop: 10,
-    justifyContent: "space-between",
     alignItems: "center",
     backgroundColor: "#f9f9f9",
     width: "100%",
@@ -84,7 +109,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 15,
     textAlign: "center",
-    flexWrap: "wrap",
     width: "100%",
   },
   redes: {
@@ -94,26 +118,18 @@ const styles = StyleSheet.create({
     margin: 10,
     gap: 15,
   },
-
-  addButtonContainer: {
-    marginTop: 0,
-  },
-
   card: {
     flex: 1,
     flexDirection: "column",
     alignItems: "center",
-    justifyContent: "space-between",
     padding: 10,
     backgroundColor: "#fff",
     margin: 5,
     borderRadius: 8,
     elevation: 3,
-
-    borderWidth: 1, 
+    borderWidth: 1,
     borderColor: "red",
   },
-
   productTitle: {
     fontSize: 18,
     fontWeight: "bold",
@@ -121,12 +137,17 @@ const styles = StyleSheet.create({
   list: {
     width: "100%",
   },
-
   listContent: {
-    alignItems: "center",
-    width: "100%",
     paddingHorizontal: 5,
     alignItems: "stretch",
     justifyContent: "space-between",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    fontSize: 18,
   },
 });

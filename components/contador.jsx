@@ -1,7 +1,9 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Item } from "react-native";
-import { useDispatch, useSelector } from "react-redux"; // Necesarios para conectar a Redux
-import { agregarAlCarrito, quitarDelCarrito } from "../redux/carritoSlice"; // Importa las acciones del carrito
+import { useDispatch, useSelector } from "react-redux"; 
+import { agregarAlCarrito, quitarDelCarrito } from "../redux/carritoSlice"; 
+import { agregarConStock, quitarConStock } from "../redux/carritoSlice";
+
 
 const Contador = ({ item }) => {
   const dispatch = useDispatch();
@@ -20,20 +22,23 @@ const Contador = ({ item }) => {
 
   return (
     <View style={styles.container}>
-      {/* BOTÓN DECREMENTAR */}
+      {/* BOTÓN RESTAR */}
       <TouchableOpacity
         style={styles.btn}
-        onPress={handleDecrementar}
+        onPress={() => dispatch(quitarConStock(item.id))}
         disabled={cantidadActual === 0}
       >
         <Text style={styles.btnText}>➖</Text>
       </TouchableOpacity>
 
-      {/* MOSTRAR CANTIDAD ACTUAL DEL CARRITO */}
+      {/* CANTIDAD CORRECTA */}
       <Text style={styles.numero}>{cantidadActual}</Text>
 
-      {/* BOTÓN INCREMENTAR */}
-      <TouchableOpacity style={styles.btn} onPress={handleIncrementar}>
+      {/* BOTÓN SUMAR */}
+      <TouchableOpacity
+        style={styles.btn}
+        onPress={() => dispatch(agregarConStock(item))}
+      >
         <Text style={styles.btnText}>➕</Text>
       </TouchableOpacity>
     </View>

@@ -56,11 +56,11 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
   },
   menuContainer: {
-    flexDirection: "row", // 👈 los botones uno al lado del otro
+    flexDirection: "row", 
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 25,
-    gap: 10, // 👈 espacio entre botones (React Native 0.71+)
+    gap: 10, 
   },
   button: {
     width: 120,

@@ -18,10 +18,9 @@ export default function AddProducts() {
   const [cantidad, setCantidad] = useState("");
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
 
-  const categoriaRef = ref(database, "categoria/");
-
-  // LEE PRODUCTOS EN TIEMPO REAL
+  
   useEffect(() => {
+    const categoriaRef = ref(database, "categoria/");
     onValue(categoriaRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {

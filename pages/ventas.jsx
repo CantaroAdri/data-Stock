@@ -77,10 +77,10 @@ const Ventas = ({ navigation }) => {
         renderItem={({ item }) => (
           <View style={styles.card}>
             <Text style={styles.productTitle}>{item.nombre}</Text>
-            <Text>Precio Unitario: ${item.precio}</Text>
+            <Text>Unitario: ${item.precio}</Text>
             <Text style={styles.quantityText}>Cantidad: {item.cantidad}</Text>
             <Text style={styles.subtotalText}>
-              Subtotal: ${(item.precio * item.cantidad).toFixed(2)}
+               ${(item.precio * item.cantidad).toFixed(2)}
             </Text>
 
             {/* BOTÓN QUITAR */}
@@ -95,7 +95,7 @@ const Ventas = ({ navigation }) => {
         style={styles.list}
         contentContainerStyle={styles.listContent}
       />
-      {/* BOTÓN FINALIZAR COMPRA */}
+       {/* BOTÓN FINALIZAR COMPRA  */}
       <TouchableOpacity
         onPress={handleFinalizarCompra}
         style={styles.finalizarButton}
@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
     color: "green",
   },
   card: {
-    flexDirection: "row",
+    flexDirection: "column",
     alignItems: "center",
     justifyContent: "space-between",
     padding: 10,
@@ -160,6 +160,7 @@ const styles = StyleSheet.create({
     flex: 2,
     fontSize: 16,
     fontWeight: "bold",
+    flexShrink: 1, 
   },
   quantityText: {
     fontSize: 14,
