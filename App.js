@@ -7,18 +7,29 @@ import ScreenStart from "./pages/screenStart";
 
 import { Provider } from "react-redux";
 import store from "./redux/store";
+import { SQLiteProvider } from "expo-sqlite";
 
+export const initializeDB = async (db) => {
+  try {
+    await db.execAsync(`CREATE TABLE IF NOT EXISTS usuarios (
+      id INTEGER PRIMARY KEY not null,
+      email TEXT NOT NULL,
+      password TEXT NOT NULL);`);
+  } catch (error) {}
+};
 
 export default function App() {
   return (
     <SafeAreaProvider>
-      <Provider store={store}>
-        <NavigationContainer>
-          <SafeAreaView style={styles.safeArea}>
-            <ScreenStart/>          
-          </SafeAreaView>
-        </NavigationContainer>
-      </Provider>
+      <SQLiteProvider databaseName="data_stock.db" onInit={initializeDB}>
+        <Provider store={store}>
+          <NavigationContainer>
+            <SafeAreaView style={styles.safeArea}>
+              <ScreenStart />
+            </SafeAreaView>
+          </NavigationContainer>
+        </Provider>
+      </SQLiteProvider>
     </SafeAreaProvider>
   );
 }

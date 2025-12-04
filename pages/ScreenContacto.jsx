@@ -6,6 +6,8 @@ import { useState } from "react";
 
 import * as ImagePicker from "expo-image-picker"; 
 import { MaterialIcons } from "@expo/vector-icons";
+
+
 const ScreenContacto = ({ navigation }) => {
   const [location, setLocation] = useState(null);
   const [locationText, setLocationText] = useState("Ubicación no cargada");

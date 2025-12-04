@@ -6,31 +6,56 @@ import {
   Pressable,
   Dimensions,
 } from "react-native";
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import { useLoginMutation } from "../../redux/authService";
 import { useDispatch } from "react-redux";
 import { setUser } from "../../redux/authSlice";
-
-const textInputWidth = Dimensions.get("window").width * 0.8;
+import { useSQLiteContext } from "expo-sqlite";
 
 const LoginScreen = ({ navigation }) => {
+  const db = useSQLiteContext();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const dispatch = useDispatch();
   const [login, result] = useLoginMutation();
 
+  useEffect(() => {
+    async function setup() {
+      const result = await db.getFirstAsync ("SELECT * FROM usuarios;");
+      if(result && result.email && result.password){
+        dispatch(setUser({email: result.email, 
+          password: result.password}) );
+      }
+    }
+    setup();
+  },[])
+
+   const guardarUsuario = async (email, password) => {
+    try {
+        const result = await db.runAsync("INSERT INTO usuarios (email, password) VALUES (?, ?);", [email, password]);
+    }
+    catch(error){
+       console.log("ERROR al guardar usuario:", error);
+    }
+   }
+
   const onSubmit = () => {
     login({ email, password });
   };
   useEffect(() => {
-    if (result.status == "fulfilled") {
+    async function handleLoginResult() {
 
-      dispatch(setUser(result.data));
-    } else if (result.status == "rejected") {
-      alert("Error al registrar el usuario");
+      if (result.isSuccess ) {  
+        dispatch(setUser(result.data));
+        await guardarUsuario(email, password); 
+      }     
+         else if (result.isError ) {
+        alert("Error al registrar el usuario");
+      }
     }
-  });
+    handleLoginResult();
+  }, [result]);
 
   return (
     <View style={styles.containerMain}>
