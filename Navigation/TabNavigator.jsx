@@ -7,6 +7,7 @@ import Home from "../pages/home";
 import Ventas from "../pages/ventas";
 import ProductList from "../pages/productList";
 import ScreenContacto from "../pages/ScreenContacto";
+import Facturacion from "../pages/facturacion";
 
 const Tab = createBottomTabNavigator();
 
@@ -75,6 +76,21 @@ function TabNavigator() {
             />
           ),
           tabBarLabel: "Carrito",
+        }}
+      />
+       <Tab.Screen
+        name="Promedio"
+        component={Facturacion}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <MaterialIcons
+            name="attach-money"
+              
+              size={30}
+              color={focused ? "#50AD5C" : "#999999ff"}
+            />
+          ),
+          tabBarLabel: "Facturacion",
         }}
       />
     </Tab.Navigator>

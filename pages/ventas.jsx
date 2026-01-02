@@ -8,7 +8,10 @@ import {
 } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 
-import { quitarDelCarrito } from "../redux/carritoSlice";
+import { quitarDelCarrito, vaciarCarrito } from "../redux/carritoSlice";
+import { database } from "../firebase"; 
+import { ref, get, update, push } from "firebase/database";
+
 
 const Ventas = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -37,30 +40,47 @@ const Ventas = ({ navigation }) => {
     }
 
     Alert.alert(
-      "Finalizar Compra",
-      `Total a pagar: $${totalCompra.toFixed(2)}. ¿Desea confirmar?`,
-      [
-        { text: "Cancelar" },
-        {
-          text: "Confirmar",
-          onPress: () => {
-            console.log("Compra finalizada!");
-          },
-        },
-      ]
-    );
-  };
+    "Confirmar Venta",
+    `Total: $${totalCompra.toFixed(2)}`,
+    [
+      { text: "Cancelar" },
+      {
+        text: "Confirmar",
+        onPress: async () => {
+          try {
+            const hoy = new Date().toISOString().split('T')[0]; // Ejemplo: "2026-01-01"
+            const facturaRef = ref(database, `facturacion/${hoy}`);
 
-  if (cartItems.length === 0) {
-    return (
-      <View style={styles.emptyContainer}>
-        <Text style={styles.title}>🛒 Carrito Vacío</Text>
-        <Text style={styles.textoSecundario}>
-          Aún no has agregado productos a tus ventas.
-        </Text>
-      </View>
-    );
-  }
+            // 1. Obtenemos el total acumulado actual de ese día
+            const snapshot = await get(facturaRef);
+            const dataActual = snapshot.val() || { totalDelDia: 0, ventas: {} };
+
+            // 2. Actualizamos sumando el nuevo total
+            const nuevoTotal = dataActual.totalDelDia + totalCompra;
+
+            await update(facturaRef, {
+              totalDelDia: nuevoTotal,
+              ultimaActualizacion: new Date().toLocaleTimeString()
+            });
+
+            // 3. Opcional: Guardar el detalle de esta venta individual dentro del día
+            await push(ref(database, `facturacion/${hoy}/operaciones`), {
+              monto: totalCompra,
+              hora: new Date().toLocaleTimeString(),
+              items: cartItems
+            });
+
+            dispatch(vaciarCarrito());
+            Alert.alert("Éxito", "Venta registrada en facturación.");
+          } catch (error) {
+            console.error(error);
+            Alert.alert("Error", "No se pudo guardar la factura.");
+          }
+        },
+      },
+    ]
+  );
+};
 
   return (
     <View style={styles.container}>
@@ -101,7 +121,7 @@ const Ventas = ({ navigation }) => {
         style={styles.finalizarButton}
       >
         <Text style={styles.finalizarButtonText}>Finalizar Compra</Text>
-      </TouchableOpacity>{" "}
+      </TouchableOpacity>
     </View>
   );
 };

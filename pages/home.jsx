@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     elevation: 3,
     borderWidth: 1,
-    borderColor: "red",
+    borderColor: "#07c411ff",
   },
   productTitle: {
     fontSize: 18,

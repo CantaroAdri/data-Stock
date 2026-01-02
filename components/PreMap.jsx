@@ -65,8 +65,8 @@ const styles = StyleSheet.create({
     marginVertical: 15,
   },
   map: {
-    width: 300,
-    height: 300,
+    width: 200,
+    height: 200,
     borderRadius: 10,
     backgroundColor: "#ccc",
   },

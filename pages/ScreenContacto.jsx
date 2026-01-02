@@ -124,17 +124,17 @@ const ScreenContacto = ({ navigation }) => {
           <Text style={styles.buttonText}>Cerrar Sesión</Text>
         </Pressable>
 
-        {/*  BOTÓN CÁMARA */}
+        
         <Pressable onPress={pickImage} style={styles.cameraButton}>
           <MaterialIcons name="photo-camera" size={30} color="#fff" />
         </Pressable>
 
-        {/*  MAPA  */}
+        
         <Text style={styles.subTitle}>Ubicación:</Text>
         <Text style={styles.locationText}>{locationText}</Text>
         <PreMap location={location} />
 
-        {/* BOTONES DE ACCIÓN */}
+        
         <Pressable
           onPress={requestLocationPermission}
           style={styles.actionButton}
@@ -142,13 +142,7 @@ const ScreenContacto = ({ navigation }) => {
           <Text style={styles.buttonText}>Obtener mi Ubicación</Text>
         </Pressable>
 
-        <Pressable
-          onPress={handleLogout}
-          style={[styles.actionButton, styles.logoutButton]}
-        >
-          <MaterialIcons name="add-location" size={20} color="#fff" />
-          <Text style={styles.buttonText}>Cerrar Sesión</Text>
-        </Pressable>
+        
       </View>
     </View>
   );
@@ -207,8 +201,8 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   profileImage: {
-    width: "100%",
-    height: "100%",
+    width: "60%",
+    height: "60%",
     borderRadius: 60,
   },
   cameraButton: {

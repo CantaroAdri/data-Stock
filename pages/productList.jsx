@@ -4,31 +4,28 @@ import { Image } from "react-native";
 import { useGetProductsQuery } from "../redux/shopService";
 import AddProducts from "../components/addProducts";
 
-const ProductList = ({  }) => {
+const ProductList = ({}) => {
   const { data: products, error, isLoading } = useGetProductsQuery();
 
   if (isLoading) return <Text>Cargando productos...</Text>;
-  if (error) return <Text>Ocurrió un error: {error.message}</Text>;
-
+  if (error) return <Text>Ocurrió un error: {JSON.stringify(error)}</Text>;
 
   <FlatList
-  data={Object.values(products || {})}
-  keyExtractor={(item, index) => index.toString()}
-  renderItem={({ item }) => (
-    <Text>{item.nombre}</Text>
-  )}
-/>
-
+    data={Object.values(products || {})}
+    keyExtractor={(item, index) => index.toString()}
+    renderItem={({ item }) => <Text>{item.nombre}</Text>}
+  />;
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Lista de Productos</Text>
+
       <View style={styles.redes}>
         <Image source={require("../assets/Img/icons-facebook.png")} />
         <Image source={require("../assets/Img/icons-instagram.png")} />
         <Image source={require("../assets/Img/icons-whatsapp.png")} />
       </View>
-     
+
       <AddProducts />
     </View>
   );
@@ -47,8 +44,8 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: "bold",
     marginBottom: 15,
-    justifyContent: "space-between", 
-    alignItems: "center", 
+    justifyContent: "space-between",
+    alignItems: "center",
     textAlign: "center",
     flexWrap: "wrap",
     width: "100%",
@@ -59,10 +56,10 @@ const styles = StyleSheet.create({
     gap: 15,
   },
   menu: {
-    flexDirection: "row", 
+    flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    gap: 10, 
+    gap: 10,
     paddingVertical: 10,
     marginTop: 20,
     borderColor: "#000000",
@@ -73,6 +70,6 @@ const styles = StyleSheet.create({
   },
 
   addButtonContainer: {
-    marginTop: 0, 
+    marginTop: 0,
   },
 });

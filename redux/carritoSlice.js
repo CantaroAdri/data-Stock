@@ -29,6 +29,9 @@ const carritoSlice = createSlice({
           delete state.items[id];
         }
       }
+    },
+    vaciarCarrito: (state) => {
+      state.items = {};
     }
   }
 });
@@ -43,6 +46,6 @@ export const quitarConStock = (id) => (dispatch) => {
   dispatch(sumarStock(id));
 };
 
-export const { agregarAlCarrito, quitarDelCarrito } = carritoSlice.actions;
+export const { agregarAlCarrito, quitarDelCarrito, vaciarCarrito } = carritoSlice.actions;
 export default carritoSlice.reducer;
 

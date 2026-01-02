@@ -7,9 +7,9 @@ import {
   FlatList,
   StyleSheet,
 } from "react-native";
-
+import { MaterialIcons } from "@expo/vector-icons";
 import { database } from "../firebase";
-import { ref, push, onValue, remove } from "firebase/database";
+import { ref, push, onValue, remove, update } from "firebase/database";
 
 export default function AddProducts() {
   const [productos, setProductos] = useState([]);
@@ -17,11 +17,11 @@ export default function AddProducts() {
   const [precio, setPrecio] = useState("");
   const [cantidad, setCantidad] = useState("");
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
+const [editId, setEditId] = useState (null)
+  const categoriaRef = ref(database, "categoria/");
 
-  
   useEffect(() => {
-    const categoriaRef = ref(database, "categoria/");
-    onValue(categoriaRef, (snapshot) => {
+    const unsubscribe = onValue(categoriaRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
         const lista = Object.keys(data).map((id) => ({
@@ -29,8 +29,12 @@ export default function AddProducts() {
           ...data[id],
         }));
         setProductos(lista.reverse());
+      } else {
+        setProductos([]);
       }
     });
+
+    return () => unsubscribe();
   }, []);
 
   // GUARDAR PRODUCTO
@@ -46,12 +50,32 @@ export default function AddProducts() {
       cantidad: parseInt(cantidad),
     };
 
-    await push(categoriaRef, nuevo);
+    try {
+      if (editId) {
+        // MODO EDICIÓN: Actualizamos el nodo existente
+        const productoRef = ref(database, `categoria/${editId}`);
+        await update(productoRef, nuevo);
+        setEditId(null); 
+        // Limpiamos el modo edición
+      } else {
+      await push(categoriaRef, nuevo);}
+      setNombre("");
+      setPrecio("");
+      setCantidad("");
+      setMostrarFormulario(false);
+    } catch (e) {
+      console.error("Error agregando producto:", e);
+      alert("Error al guardar el producto.");
+    }
+  };
 
-    setNombre("");
-    setPrecio("");
-    setCantidad("");
-    setMostrarFormulario(false);
+  //EDITAR PRODUCTO
+  const handleEdit = (item) => {
+    setEditId(item.id); // Guardamos el ID que vamos a modificar
+    setNombre(item.nombre);
+    setPrecio(item.precio.toString());
+    setCantidad(item.cantidad.toString());
+    setMostrarFormulario(true); // Abrimos el formulario con los datos cargados
   };
 
   // ELIMINAR PRODUCTO
@@ -96,7 +120,10 @@ export default function AddProducts() {
           />
 
           <View style={styles.row}>
-            <TouchableOpacity style={[styles.btn, styles.save]} onPress={handleAgregar}>
+            <TouchableOpacity
+              style={[styles.btn, styles.save]}
+              onPress={handleAgregar}
+            >
               <Text style={styles.btnText}>Guardar</Text>
             </TouchableOpacity>
 
@@ -121,6 +148,10 @@ export default function AddProducts() {
 
             <TouchableOpacity onPress={() => handleEliminar(item.id)}>
               <Text style={{ fontSize: 22 }}>❌</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => handleEdit(item)}>
+              <MaterialIcons name="edit" size={24} color="#527dff" margin={5} />
             </TouchableOpacity>
           </View>
         )}
