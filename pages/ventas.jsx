@@ -5,31 +5,42 @@ import {
   FlatList,
   TouchableOpacity,
   Alert,
+  TextInput,
 } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 
 import { quitarDelCarrito, vaciarCarrito } from "../redux/carritoSlice";
-import { database } from "../firebase"; 
+import { database } from "../firebase";
 import { ref, get, update, push } from "firebase/database";
-
+import { useState } from "react";
 
 const Ventas = ({ navigation }) => {
   const dispatch = useDispatch();
 
+  const [propina, setPropina] = useState(0);
+
+
+  
+
   const cartItemsObject = useSelector((state) => state.carritoReducer.items);
   const cartItems = Object.values(cartItemsObject);
 
-  //  CALCULAR EL TOTAL DE LA COMPRA
+    const subtotal = cartItems.reduce((sum, item) => {
+    return sum + item.precio * item.cantidad;
+  }, 0);
+
+
+  const montoPropina = parseFloat(propina) || 0;
+  const totalConPropina = subtotal + montoPropina;
+
   const totalCompra = cartItems.reduce((sum, item) => {
     return sum + item.precio * item.cantidad;
   }, 0);
 
-  //  HANDLER PARA QUITAR UN PRODUCTO
   const handleQuitarItem = (id) => {
     dispatch(quitarDelCarrito(id));
   };
 
-  //  HANDLER PARA FINALIZAR COMPRA
   const handleFinalizarCompra = () => {
     if (cartItems.length === 0) {
       Alert.alert(
@@ -40,56 +51,66 @@ const Ventas = ({ navigation }) => {
     }
 
     Alert.alert(
-    "Confirmar Venta",
-    `Total: $${totalCompra.toFixed(2)}`,
-    [
-      { text: "Cancelar" },
-      {
-        text: "Confirmar",
-        onPress: async () => {
-          try {
-            const hoy = new Date().toISOString().split('T')[0]; // Ejemplo: "2026-01-01"
-            const facturaRef = ref(database, `facturacion/${hoy}`);
+      "Confirmar Venta",
+      `Subtotal: $${subtotal.toFixed(2)}\nPropina: $${montoPropina.toFixed(
+        2
+      )}\nTotal: $${totalConPropina.toFixed(2)}`,
+      [
+        { text: "Cancelar" },
+        {
+          text: "Confirmar",
+          onPress: async () => {
+            try {
+              const hoy = new Date().toISOString().split("T")[0]; // Ejemplo: "2026-01-01"
+              const facturaRef = ref(database, `facturacion/${hoy}`);
 
-            // 1. Obtenemos el total acumulado actual de ese día
-            const snapshot = await get(facturaRef);
-            const dataActual = snapshot.val() || { totalDelDia: 0, ventas: {} };
+              // 1. Obtenemos el total acumulado actual de ese día
+              const snapshot = await get(facturaRef);
+              const dataActual = snapshot.val() || {
+                totalDelDia: 0,
+                ventas: {},
+              };
 
-            // 2. Actualizamos sumando el nuevo total
-            const nuevoTotal = dataActual.totalDelDia + totalCompra;
+              // 2. Actualizamos sumando el nuevo total
+              const nuevoTotal = dataActual.totalDelDia + totalConPropina;
 
-            await update(facturaRef, {
-              totalDelDia: nuevoTotal,
-              ultimaActualizacion: new Date().toLocaleTimeString()
-            });
+              await update(facturaRef, {
+                totalDelDia: nuevoTotal,
+                ultimaActualizacion: new Date().toLocaleTimeString(),
+              });
 
-            // 3. Opcional: Guardar el detalle de esta venta individual dentro del día
-            await push(ref(database, `facturacion/${hoy}/operaciones`), {
-              monto: totalCompra,
-              hora: new Date().toLocaleTimeString(),
-              items: cartItems
-            });
+              // 3. Opcional: Guardar el detalle de esta venta individual dentro del día
+              await push(ref(database, `facturacion/${hoy}/operaciones`), {
+                montoProductos: subtotal,
+                propina: montoPropina,
+                montoTotal: totalConPropina,
+                hora: new Date().toLocaleTimeString(),
+                items: cartItems,
+              });
 
-            dispatch(vaciarCarrito());
-            Alert.alert("Éxito", "Venta registrada en facturación.");
-          } catch (error) {
-            console.error(error);
-            Alert.alert("Error", "No se pudo guardar la factura.");
-          }
+              dispatch(vaciarCarrito());
+              setPropina("")
+              Alert.alert("Éxito", "Venta registrada en facturación.");
+            } catch (error) {
+              console.error(error);
+              Alert.alert("Error", "No se pudo guardar la factura.");
+            }
+          },
         },
-      },
-    ]
-  );
-};
+      ]
+    );
+  };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>🛒 Ventas (Carrito)</Text>
-      {/* DETALLE DEL TOTAL */}
-      <View style={styles.totalContainer}>
-        <Text style={styles.totalText}>TOTAL:</Text>
-        <Text style={styles.totalAmount}>${totalCompra.toFixed(2)}</Text>
-      </View>
+
+      <View style={{ flex: 1 }}>
+          <Text style={styles.totalText}>Productos: ${subtotal.toFixed(2)}</Text>
+          <Text style={[styles.totalAmount, { color: 'green' }]}>
+            Total Final: ${totalConPropina.toFixed(2)}
+          </Text>
+        </View>
+            
       {/*  LISTA DE PRODUCTOS EN EL CARRITO */}
       <FlatList
         data={cartItems}
@@ -100,7 +121,7 @@ const Ventas = ({ navigation }) => {
             <Text>Unitario: ${item.precio}</Text>
             <Text style={styles.quantityText}>Cantidad: {item.cantidad}</Text>
             <Text style={styles.subtotalText}>
-               ${(item.precio * item.cantidad).toFixed(2)}
+              ${(item.precio * item.cantidad).toFixed(2)}
             </Text>
 
             {/* BOTÓN QUITAR */}
@@ -115,7 +136,20 @@ const Ventas = ({ navigation }) => {
         style={styles.list}
         contentContainerStyle={styles.listContent}
       />
-       {/* BOTÓN FINALIZAR COMPRA  */}
+      
+        <View style={styles.propinaInputContainer}>
+          <Text style={styles.propinaLabel}>Propina $</Text>
+          <TextInput
+            style={styles.inputPropina}
+            placeholder="0"
+            keyboardType="numeric"
+            value={propina.toString()} // Importante: convertir a string
+            onChangeText={(value) => setPropina(value)}
+          />
+        </View>
+
+
+      {/* BOTÓN FINALIZAR COMPRA  */}
       <TouchableOpacity
         onPress={handleFinalizarCompra}
         style={styles.finalizarButton}
@@ -180,7 +214,7 @@ const styles = StyleSheet.create({
     flex: 2,
     fontSize: 16,
     fontWeight: "bold",
-    flexShrink: 1, 
+    flexShrink: 1,
   },
   quantityText: {
     fontSize: 14,
@@ -215,4 +249,30 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
   },
+  propinaInputContainer: {
+    alignItems: "flex-end",
+    justifyContent: "center",
+    marginLeft: 10,
+  },
+  propinaLabel: {
+    fontSize: 12,
+    color: "#666",
+    fontWeight: "bold",
+    marginBottom: 2,
+  },
+  inputPropina: {
+    backgroundColor: "#f0f0f0", // Gris clarito para que se note
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 8,
+    width: 90,
+    textAlign: "right",
+    fontSize: 18,
+    fontWeight: "bold",
+    borderWidth: 1,
+    borderColor: "#ccc",
+    color: "#333",
+  },
+
+
 });

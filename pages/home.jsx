@@ -1,11 +1,6 @@
-import React, { useEffect } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  Image,
-} from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, Text, TextInput, StyleSheet, FlatList, Image, TouchableOpacity } from "react-native";
+import { MaterialIcons } from "@expo/vector-icons";
 
 import { useDispatch, useSelector } from "react-redux";
 import { setProductos } from "../redux/stockSlice";
@@ -13,13 +8,12 @@ import { ref, onValue } from "firebase/database";
 import { database } from "../firebase";
 import Contador from "../components/contador";
 
+
 const Home = () => {
   const dispatch = useDispatch();
-
-  
+  const [search, setSearch] = useState("");
   const lista = useSelector((state) => state.productos.lista);
 
-  
   useEffect(() => {
     const productosRef = ref(database, "categoria/");
 
@@ -35,8 +29,6 @@ const Home = () => {
 
     return () => unsubscribe();
   }, []);
-
-
 
   if (!lista) {
     return (
@@ -54,7 +46,6 @@ const Home = () => {
     );
   }
 
-  
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Home!</Text>
@@ -65,10 +56,27 @@ const Home = () => {
         <Image source={require("../assets/Img/icons-whatsapp.png")} />
       </View>
 
+      <View style={styles.searchSection}>
+        <View style={styles.searchContainer}>
+          <MaterialIcons name="search" size={22} color="#666" />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Buscar productos..."
+            value={search}
+            onChangeText={setSearch}
+          />
+          {search.length > 0 && (
+            <TouchableOpacity onPress={() => setSearch("") }>
+              <MaterialIcons name="close" size={22} color="#666" />
+            </TouchableOpacity>
+          )}
+        </View>
+      </View>
+
       <Text style={styles.textoSecundario}>Productos disponibles:</Text>
 
       <FlatList
-        data={lista}
+        data={lista.filter(item => item.nombre?.toLowerCase().includes(search.toLowerCase()))}
         keyExtractor={(item) => item.id}
         numColumns={2}
         style={styles.list}
@@ -95,7 +103,6 @@ const Home = () => {
 
 export default Home;
 
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -117,6 +124,29 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     margin: 10,
     gap: 15,
+  },
+  searchSection: {
+    width: "100%",
+    paddingHorizontal: 16,
+    marginBottom: 10,
+  },
+  searchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderRadius: 8,
+    elevation: 2,
+    gap: 8,
+  },
+  searchInput: {
+    flex: 1,
+    marginLeft: 8,
+  },
+  textoSecundario: {
+      margin: 25,
+      padding: 30,
   },
   card: {
     flex: 1,

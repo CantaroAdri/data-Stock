@@ -17,7 +17,7 @@ export default function AddProducts() {
   const [precio, setPrecio] = useState("");
   const [cantidad, setCantidad] = useState("");
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
-const [editId, setEditId] = useState (null)
+  const [editId, setEditId] = useState(null);
   const categoriaRef = ref(database, "categoria/");
 
   useEffect(() => {
@@ -55,10 +55,11 @@ const [editId, setEditId] = useState (null)
         // MODO EDICIÓN: Actualizamos el nodo existente
         const productoRef = ref(database, `categoria/${editId}`);
         await update(productoRef, nuevo);
-        setEditId(null); 
+        setEditId(null);
         // Limpiamos el modo edición
       } else {
-      await push(categoriaRef, nuevo);}
+        await push(categoriaRef, nuevo);
+      }
       setNombre("");
       setPrecio("");
       setCantidad("");
@@ -151,7 +152,12 @@ const [editId, setEditId] = useState (null)
             </TouchableOpacity>
 
             <TouchableOpacity onPress={() => handleEdit(item)}>
-              <MaterialIcons name="edit" size={24} color="#527dff" margin={5} />
+              <MaterialIcons
+                name="edit"
+                size={24}
+                color="#486d04cc"
+                margin={5}
+              />
             </TouchableOpacity>
           </View>
         )}
@@ -161,28 +167,61 @@ const [editId, setEditId] = useState (null)
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20 },
-  title: { fontSize: 24, marginBottom: 10, fontWeight: "bold" },
-  primaryButton: { backgroundColor: "#007bff", padding: 10, borderRadius: 8 },
-  primaryText: { color: "#fff", textAlign: "center", fontSize: 18 },
-  form: { marginTop: 15 },
+  container: {
+    flex: 1,
+    padding: 20,
+  },
+  title: {
+    fontSize: 24,
+    marginBottom: 10,
+    fontWeight: "bold",
+  },
+  primaryButton: {
+    backgroundColor: "#486d04cc",
+    padding: 10,
+    borderRadius: 8,
+  },
+  primaryText: {
+    color: "#fff",
+    textAlign: "center",
+    fontSize: 18,
+  },
+  form: {
+    marginTop: 15,
+  },
   input: {
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: "#ccccccff",
     padding: 10,
     marginBottom: 10,
     borderRadius: 6,
   },
-  row: { flexDirection: "row", justifyContent: "space-between" },
-  btn: { flex: 1, padding: 10, marginHorizontal: 5, borderRadius: 6 },
-  save: { backgroundColor: "green" },
-  cancel: { backgroundColor: "red" },
-  btnText: { textAlign: "center", color: "#fff", fontSize: 16 },
+  row: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  btn: {
+    flex: 1,
+    padding: 10,
+    marginHorizontal: 5,
+    borderRadius: 6,
+  },
+  save: {
+    backgroundColor: "green",
+  },
+  cancel: {
+    backgroundColor: "red",
+  },
+  btnText: {
+    textAlign: "center",
+    color: "#fff",
+    fontSize: 16,
+  },
   item: {
     flexDirection: "row",
     justifyContent: "space-between",
     padding: 12,
-    backgroundColor: "#f5f5f5",
+    backgroundColor: "#e4e4e4ff",
     marginTop: 10,
     borderRadius: 6,
   },

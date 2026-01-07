@@ -1,8 +1,7 @@
 import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet, Item } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useDispatch, useSelector } from "react-redux"; 
-import { agregarAlCarrito, quitarDelCarrito } from "../redux/carritoSlice"; 
-import { agregarConStock, quitarConStock } from "../redux/carritoSlice";
+import { agregarAlCarrito, quitarDelCarrito, agregarConStock, quitarConStock } from "../redux/carritoSlice";
 
 
 const Contador = ({ item }) => {

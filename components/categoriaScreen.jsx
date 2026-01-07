@@ -8,7 +8,7 @@ export default function CategoriaScreen({ navigation }) {
 
   const renderItem = ({ item }) => (
     <Pressable
-      onPress={() => navigation.navigate("productos", item.id)}
+      onPress={() => navigation.navigate("ProductList", { id: item.id })}
       style={styles.item}
     >
       <Image
@@ -16,16 +16,26 @@ export default function CategoriaScreen({ navigation }) {
         style={styles.categoriaImage}
       />
       <Text style={styles.categoriaTitle}>{item.title}</Text>
-       <Contador id={item.id} />
+       <Contador item={item} />
 
     </Pressable>
   );
 
   if (isLoading) return <Text>Cargando...</Text>;
   if (error) return <Text>Error</Text>;
+
+  return (
+    <FlatList
+      data={categorias || []}
+      keyExtractor={(item) => item.id}
+      renderItem={renderItem}
+      contentContainerStyle={{ padding: 10 }}
+    />
+  );
 }
 
 const styles = StyleSheet.create({
+  item: { flexDirection: 'row', alignItems: 'center', padding: 10, backgroundColor: '#fff', marginBottom: 8, borderRadius: 6 },
   categoriaImage: { width: 80, height: 80 },
-  categoriaTitle: { fontSize: 18, fontWeight: "bold" },
+  categoriaTitle: { fontSize: 18, fontWeight: "bold", marginLeft: 12 },
 });
