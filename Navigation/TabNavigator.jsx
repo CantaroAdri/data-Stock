@@ -6,7 +6,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import Home from "../pages/home";
 import Ventas from "../pages/ventas";
 import ProductList from "../pages/productList";
-import ScreenContacto from "../pages/ScreenContacto";
+import Faltante from "../pages/faltante";
 import Facturacion from "../pages/facturacion";
 
 const Tab = createBottomTabNavigator();
@@ -50,17 +50,17 @@ function TabNavigator() {
       />
 
       <Tab.Screen
-        name="Contactos"
-        component={ScreenContacto}
+        name="Faltante"
+        component={Faltante}
         options={{
           tabBarIcon: ({ focused }) => (
             <MaterialIcons
-             name="location-pin"
+             name="menu-book"
               size={30}
               color={focused ? "#50AD5C" : "#999999ff"}
             />
           ),
-          tabBarLabel: "Contactos",
+          tabBarLabel: "Faltante",
         }}
       />
       <Tab.Screen
