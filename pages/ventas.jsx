@@ -41,65 +41,76 @@ const Ventas = ({ navigation }) => {
     dispatch(quitarDelCarrito(id));
   };
 
-  const handleFinalizarCompra = () => {
-    if (cartItems.length === 0) {
-      Alert.alert(
-        "Carrito Vacío",
-        "No hay productos para finalizar la compra."
-      );
-      return;
-    }
 
-    Alert.alert(
-      "Confirmar Venta",
-      `Subtotal: $${subtotal.toFixed(2)}\nPropina: $${montoPropina.toFixed(
-        2
-      )}\nTotal: $${totalConPropina.toFixed(2)}`,
-      [
-        { text: "Cancelar" },
-        {
-          text: "Confirmar",
-          onPress: async () => {
-            try {
-              const hoy = new Date().toISOString().split("T")[0]; // Ejemplo: "2026-01-01"
-              const facturaRef = ref(database, `facturacion/${hoy}`);
+const handleFinalizarCompra = () => {
+  if (cartItems.length === 0) {
+    Alert.alert("Carrito Vacío", "No hay productos para finalizar.");
+    return;
+  }
 
-              // 1. Obtenemos el total acumulado actual de ese día
-              const snapshot = await get(facturaRef);
-              const dataActual = snapshot.val() || {
-                totalDelDia: 0,
-                ventas: {},
-              };
+  Alert.alert(
+    "Confirmar Venta",
+    `Total a pagar: $${totalCompra.toFixed(2)}. ¿Confirmar?`,
+    [
+      { text: "Cancelar" },
+      {
+        text: "Confirmar",
+        onPress: async () => {
+          try {
+            const hoy = new Date().toISOString().split('T')[0];
+            
+            // 1. ACTUALIZAR STOCK EN FIREBASE (Esto es lo nuevo)
+            // Usamos un bucle for...of para poder usar await dentro
+            for (const item of cartItems) {
+              const productoRef = ref(database, `categoria/${item.id}`);
+              
+              // a) Leemos el stock actual de la base de datos para no tener errores
+              const snapshot = await get(productoRef);
+              const productoData = snapshot.val();
+              
+              if (productoData) {
+                // Si en tu base de datos el stock se llama 'cantidad' o 'stock', ajusta aquí:
+                // Asumo que en Firebase la propiedad de stock se llama 'cantidad' (según tu archivo Faltante)
+                const stockActual = productoData.cantidad || 0;
+                const cantidadVendida = item.cantidad;
+                const nuevoStock = stockActual - cantidadVendida;
 
-              // 2. Actualizamos sumando el nuevo total
-              const nuevoTotal = dataActual.totalDelDia + totalConPropina;
-
-              await update(facturaRef, {
-                totalDelDia: nuevoTotal,
-                ultimaActualizacion: new Date().toLocaleTimeString(),
-              });
-
-              // 3. Opcional: Guardar el detalle de esta venta individual dentro del día
-              await push(ref(database, `facturacion/${hoy}/operaciones`), {
-                montoProductos: subtotal,
-                propina: montoPropina,
-                montoTotal: totalConPropina,
-                hora: new Date().toLocaleTimeString(),
-                items: cartItems,
-              });
-
-              dispatch(vaciarCarrito());
-              setPropina("")
-              Alert.alert("Éxito", "Venta registrada en facturación.");
-            } catch (error) {
-              console.error(error);
-              Alert.alert("Error", "No se pudo guardar la factura.");
+                // b) Guardamos el nuevo stock
+                await update(productoRef, {
+                  cantidad: nuevoStock >= 0 ? nuevoStock : 0 // Evitamos negativos
+                });
+              }
             }
-          },
+
+            // 2. GUARDAR EN FACTURACIÓN (Tu código anterior)
+            const facturaRef = ref(database, `facturacion/${hoy}`);
+            const snapshotFactura = await get(facturaRef);
+            const dataFactura = snapshotFactura.val() || { totalDelDia: 0 };
+            
+            await update(facturaRef, {
+              totalDelDia: dataFactura.totalDelDia + totalCompra,
+              ultimaActualizacion: new Date().toLocaleTimeString()
+            });
+
+            await push(ref(database, `facturacion/${hoy}/operaciones`), {
+              monto: totalCompra,
+              hora: new Date().toLocaleTimeString(),
+              items: cartItems
+            });
+
+            // 3. LIMPIEZA
+            dispatch(vaciarCarrito());
+            Alert.alert("¡Venta Exitosa!", "El stock y la caja han sido actualizados.");
+
+          } catch (error) {
+            console.error(error);
+            Alert.alert("Error", "Hubo un problema al conectar con la base de datos.");
+          }
         },
-      ]
-    );
-  };
+      },
+    ]
+  );
+};
 
   return (
     <View style={styles.container}>
