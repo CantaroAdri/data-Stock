@@ -52,11 +52,11 @@ export default function AddProducts() {
 
     try {
       if (editId) {
-        // MODO EDICIÓN: Actualizamos el nodo existente
+        
         const productoRef = ref(database, `categoria/${editId}`);
         await update(productoRef, nuevo);
         setEditId(null);
-        // Limpiamos el modo edición
+       
       } else {
         await push(categoriaRef, nuevo);
       }
@@ -70,16 +70,15 @@ export default function AddProducts() {
     }
   };
 
-  //EDITAR PRODUCTO
+  
   const handleEdit = (item) => {
-    setEditId(item.id); // Guardamos el ID que vamos a modificar
+    setEditId(item.id);
     setNombre(item.nombre);
     setPrecio(item.precio.toString());
     setCantidad(item.cantidad.toString());
-    setMostrarFormulario(true); // Abrimos el formulario con los datos cargados
+    setMostrarFormulario(true);
   };
 
-  // ELIMINAR PRODUCTO
   const handleEliminar = (id) => {
     remove(ref(database, "categoria/" + id));
   };

@@ -25,9 +25,7 @@ const Faltante = () => {
     return () => unsubscribe();
   }, []);
 
-  // ✅ LÓGICA DE FILTRADO: 
-  // 1. Que coincida con la búsqueda.
-  // 2. Que la cantidad sea menor a 2.
+
   const productosFaltantes = (lista || []).filter((item) => {
     const coincideNombre = item.nombre?.toLowerCase().includes(search.toLowerCase());
     const esFaltante = (item.cantidad || 0) < 2; // Condición de stock crítico
@@ -76,7 +74,7 @@ const Faltante = () => {
       </Text>
 
       <FlatList
-        data={productosFaltantes} // ✅ Usamos la lista filtrada
+        data={productosFaltantes}
         keyExtractor={(item) => item.id}
         numColumns={2}
         style={styles.list}
@@ -101,7 +99,7 @@ const Faltante = () => {
 export default Faltante;
 
 const styles = StyleSheet.create({
-  // ... mantén tus otros estilos igual ...
+ 
   stockAlert: {
     color: "red",
     fontWeight: "bold",

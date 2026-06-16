@@ -19,11 +19,11 @@ const Facturacion = () => {
           setTotalHoy(data[hoy].totalDelDia);
         }
 
-        // Convertimos el objeto en lista para ver días anteriores
+        
         const listaHistorica = Object.keys(data).map(fecha => ({
           fecha,
           total: data[fecha].totalDelDia
-        })).reverse(); // El más reciente arriba
+        })).reverse();
         
         setHistorial(listaHistorica);
       }

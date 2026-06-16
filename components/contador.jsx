@@ -30,10 +30,10 @@ const Contador = ({ item }) => {
         <Text style={styles.btnText}>➖</Text>
       </TouchableOpacity>
 
-      {/* CANTIDAD CORRECTA */}
+    
       <Text style={styles.numero}>{cantidadActual}</Text>
 
-      {/* BOTÓN SUMAR */}
+    
       <TouchableOpacity
         style={styles.btn}
         onPress={() => dispatch(agregarConStock(item))}

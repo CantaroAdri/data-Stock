@@ -19,9 +19,6 @@ const Ventas = ({ navigation }) => {
 
   const [propina, setPropina] = useState(0);
 
-
-  
-
   const cartItemsObject = useSelector((state) => state.carritoReducer.items);
   const cartItems = Object.values(cartItemsObject);
 
@@ -50,7 +47,7 @@ const handleFinalizarCompra = () => {
 
   Alert.alert(
     "Confirmar Venta",
-    `Total a pagar: $${totalCompra.toFixed(2)}. ¿Confirmar?`,
+    `Total a pagar (con propina): $${totalConPropina.toFixed(2)}. ¿Confirmar?`,
     [
       { text: "Cancelar" },
       {
@@ -58,52 +55,57 @@ const handleFinalizarCompra = () => {
         onPress: async () => {
           try {
             const hoy = new Date().toISOString().split('T')[0];
-            
-            // 1. ACTUALIZAR STOCK EN FIREBASE (Esto es lo nuevo)
-            // Usamos un bucle for...of para poder usar await dentro
-            for (const item of cartItems) {
-              const productoRef = ref(database, `categoria/${item.id}`);
-              
-              // a) Leemos el stock actual de la base de datos para no tener errores
-              const snapshot = await get(productoRef);
-              const productoData = snapshot.val();
-              
-              if (productoData) {
-                // Si en tu base de datos el stock se llama 'cantidad' o 'stock', ajusta aquí:
-                // Asumo que en Firebase la propiedad de stock se llama 'cantidad' (según tu archivo Faltante)
-                const stockActual = productoData.cantidad || 0;
-                const cantidadVendida = item.cantidad;
-                const nuevoStock = stockActual - cantidadVendida;
+         
+for (const item of cartItems) {
+ 
+  if (item.keyFirebase) {
+    const productoRef = ref(database, `categoria/${item.keyFirebase}`);
+    
+   
+    const snapshot = await get(productoRef);
+    const productoData = snapshot.val();
+    
+    if (productoData) {
+      const stockActual = productoData.cantidad || 0;
+      const cantidadVendida = item.cantidad;
+      const nuevoStock = stockActual - cantidadVendida;
 
-                // b) Guardamos el nuevo stock
-                await update(productoRef, {
-                  cantidad: nuevoStock >= 0 ? nuevoStock : 0 // Evitamos negativos
-                });
-              }
-            }
+      await update(productoRef, {
+        cantidad: nuevoStock >= 0 ? nuevoStock : 0 
+      });
+    } else {
+      console.warn(`Ojo: No se encontró el producto en la key ${item.keyFirebase}`);
+    }
+  } else {
+    console.warn(`Ojo: El item ${item.nombre} no tiene una keyFirebase asociada.`);
+  }
+}
 
-            // 2. GUARDAR EN FACTURACIÓN (Tu código anterior)
             const facturaRef = ref(database, `facturacion/${hoy}`);
             const snapshotFactura = await get(facturaRef);
             const dataFactura = snapshotFactura.val() || { totalDelDia: 0 };
             
+         
             await update(facturaRef, {
-              totalDelDia: dataFactura.totalDelDia + totalCompra,
+              totalDelDia: dataFactura.totalDelDia + totalConPropina,
               ultimaActualizacion: new Date().toLocaleTimeString()
             });
 
             await push(ref(database, `facturacion/${hoy}/operaciones`), {
-              monto: totalCompra,
+              subtotal: totalCompra,
+              propina: montoPropina,
+              montoTotal: totalConPropina,
               hora: new Date().toLocaleTimeString(),
               items: cartItems
             });
 
-            // 3. LIMPIEZA
+            
             dispatch(vaciarCarrito());
-            Alert.alert("¡Venta Exitosa!", "El stock y la caja han sido actualizados.");
+            setPropina(0); 
+            Alert.alert("¡Venta Exitosa!", "El stock en la nube y la caja han sido actualizados permanentemente.");
 
           } catch (error) {
-            console.error(error);
+            console.error("Error en base de datos al finalizar compra:", error);
             Alert.alert("Error", "Hubo un problema al conectar con la base de datos.");
           }
         },
@@ -111,6 +113,7 @@ const handleFinalizarCompra = () => {
     ]
   );
 };
+
 
   return (
     <View style={styles.container}>
@@ -121,8 +124,7 @@ const handleFinalizarCompra = () => {
             Total Final: ${totalConPropina.toFixed(2)}
           </Text>
         </View>
-            
-      {/*  LISTA DE PRODUCTOS EN EL CARRITO */}
+     
       <FlatList
         data={cartItems}
         keyExtractor={(item) => item.id}
@@ -135,7 +137,7 @@ const handleFinalizarCompra = () => {
               ${(item.precio * item.cantidad).toFixed(2)}
             </Text>
 
-            {/* BOTÓN QUITAR */}
+         
             <TouchableOpacity
               onPress={() => handleQuitarItem(item.id)}
               style={styles.removeButton}
@@ -154,13 +156,11 @@ const handleFinalizarCompra = () => {
             style={styles.inputPropina}
             placeholder="0"
             keyboardType="numeric"
-            value={propina.toString()} // Importante: convertir a string
+            value={propina.toString()} 
             onChangeText={(value) => setPropina(value)}
           />
         </View>
 
-
-      {/* BOTÓN FINALIZAR COMPRA  */}
       <TouchableOpacity
         onPress={handleFinalizarCompra}
         style={styles.finalizarButton}
@@ -272,7 +272,7 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   inputPropina: {
-    backgroundColor: "#f0f0f0", // Gris clarito para que se note
+    backgroundColor: "#f0f0f0", 
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 8,

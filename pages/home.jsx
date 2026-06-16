@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TextInput, StyleSheet, FlatList, Image, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  FlatList,
+  Image,
+  TouchableOpacity,
+} from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 
 import { useDispatch, useSelector } from "react-redux";
@@ -8,27 +16,44 @@ import { ref, onValue } from "firebase/database";
 import { database } from "../firebase";
 import Contador from "../components/contador";
 
-
 const Home = () => {
   const dispatch = useDispatch();
   const [search, setSearch] = useState("");
   const lista = useSelector((state) => state.productos.lista);
 
   useEffect(() => {
-    const productosRef = ref(database, "categoria/");
+  const productosRef = ref(database, "categoria/");
 
-    const unsubscribe = onValue(productosRef, (snapshot) => {
-      const data = snapshot.val();
+  const unsubscribe = onValue(productosRef, (snapshot) => {
+    const data = snapshot.val();
+    console.log("📡 DATOS BRUTOS DE FIREBASE:", data);
 
-      const listaFinal = data
-        ? Object.keys(data).map((id) => ({ id, ...data[id] }))
-        : [];
+    const listaFinal = [];
 
-      dispatch(setProductos(listaFinal));
-    });
+    if (data) {
+      // Recorremos las llaves de Firebase (ej: "-Of7I1wC2Uy_qzzhAMCm")
+      Object.keys(data).forEach((keyFirebase) => {
+        const productoInfo = data[keyFirebase];
 
-    return () => unsubscribe();
-  }, []);
+        if (productoInfo) {
+          listaFinal.push({
+            // Guardamos la key de Firebase para saber exactamente en qué nodo editar el stock
+            keyFirebase: keyFirebase, 
+            id: productoInfo.id ? productoInfo.id.toString() : keyFirebase,
+            nombre: productoInfo.nombre,
+            precio: productoInfo.precio,
+            cantidad: productoInfo.cantidad || 0,
+          });
+        }
+      });
+    }
+
+    console.log("🚀 LISTA FINAL PROCESADA PARA REDUX:", listaFinal);
+    dispatch(setProductos(listaFinal));
+  });
+
+  return () => unsubscribe();
+}, []);
 
   if (!lista) {
     return (
@@ -66,7 +91,7 @@ const Home = () => {
             onChangeText={setSearch}
           />
           {search.length > 0 && (
-            <TouchableOpacity onPress={() => setSearch("") }>
+            <TouchableOpacity onPress={() => setSearch("")}>
               <MaterialIcons name="close" size={22} color="#666" />
             </TouchableOpacity>
           )}
@@ -76,7 +101,9 @@ const Home = () => {
       <Text style={styles.textoSecundario}>Productos disponibles:</Text>
 
       <FlatList
-        data={lista.filter(item => item.nombre?.toLowerCase().includes(search.toLowerCase()))}
+        data={lista.filter((item) =>
+          item.nombre?.toLowerCase().includes(search.toLowerCase()),
+        )}
         keyExtractor={(item) => item.id}
         numColumns={2}
         style={styles.list}
@@ -145,8 +172,8 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   textoSecundario: {
-      margin: 25,
-      padding: 30,
+    margin: 25,
+    padding: 30,
   },
   card: {
     flex: 1,
