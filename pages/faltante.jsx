@@ -88,7 +88,7 @@ const Faltante = () => {
               Stock Crítico: {item.cantidad || 0}
             </Text>
 
-            <Contador item={item} />
+            {/* <Contador item={item} /> */}
           </View>
         )}
       />
@@ -134,7 +134,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     height: 45,
     borderRadius: 8,
-    elevation: 2,
+
+     shadowColor: "#810baf",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.5,
+    shadowRadius: 3.84,
+
+    elevation: 5,
   },
   searchInput: { flex: 1 },
   textoSecundario: {

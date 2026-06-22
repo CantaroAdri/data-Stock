@@ -22,38 +22,38 @@ const Home = () => {
   const lista = useSelector((state) => state.productos.lista);
 
   useEffect(() => {
-  const productosRef = ref(database, "categoria/");
+    const productosRef = ref(database, "categoria/");
 
-  const unsubscribe = onValue(productosRef, (snapshot) => {
-    const data = snapshot.val();
-    console.log("📡 DATOS BRUTOS DE FIREBASE:", data);
+    const unsubscribe = onValue(productosRef, (snapshot) => {
+      const data = snapshot.val();
+      console.log("📡 DATOS BRUTOS DE FIREBASE:", data);
 
-    const listaFinal = [];
+      const listaFinal = [];
 
-    if (data) {
-      // Recorremos las llaves de Firebase (ej: "-Of7I1wC2Uy_qzzhAMCm")
-      Object.keys(data).forEach((keyFirebase) => {
-        const productoInfo = data[keyFirebase];
+      if (data) {
+        // Recorremos las llaves de Firebase (ej: "-Of7I1wC2Uy_qzzhAMCm")
+        Object.keys(data).forEach((keyFirebase) => {
+          const productoInfo = data[keyFirebase];
 
-        if (productoInfo) {
-          listaFinal.push({
-            // Guardamos la key de Firebase para saber exactamente en qué nodo editar el stock
-            keyFirebase: keyFirebase, 
-            id: productoInfo.id ? productoInfo.id.toString() : keyFirebase,
-            nombre: productoInfo.nombre,
-            precio: productoInfo.precio,
-            cantidad: productoInfo.cantidad || 0,
-          });
-        }
-      });
-    }
+          if (productoInfo) {
+            listaFinal.push({
+              // Guardamos la key de Firebase para saber exactamente en qué nodo editar el stock
+              keyFirebase: keyFirebase,
+              id: productoInfo.id ? productoInfo.id.toString() : keyFirebase,
+              nombre: productoInfo.nombre,
+              precio: productoInfo.precio,
+              cantidad: productoInfo.cantidad || 0,
+            });
+          }
+        });
+      }
 
-    console.log("🚀 LISTA FINAL PROCESADA PARA REDUX:", listaFinal);
-    dispatch(setProductos(listaFinal));
-  });
+      console.log("🚀 LISTA FINAL PROCESADA PARA REDUX:", listaFinal);
+      dispatch(setProductos(listaFinal));
+    });
 
-  return () => unsubscribe();
-}, []);
+    return () => unsubscribe();
+  }, []);
 
   if (!lista) {
     return (
@@ -166,13 +166,23 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     elevation: 2,
     gap: 8,
+
+    shadowColor: "#810baf",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.5,
+    shadowRadius: 3.84,
+
+    elevation: 5,
   },
+
   searchInput: {
     flex: 1,
     marginLeft: 8,
   },
   textoSecundario: {
-    margin: 25,
     padding: 30,
   },
   card: {
@@ -185,7 +195,19 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     elevation: 3,
     borderWidth: 1,
-    borderColor: "#07c411ff",
+    borderColor: "rgb(143, 7, 196)",
+
+    // 👇 COMANDOS DE SOMBRA PARA IPHONE (iOS)
+    shadowColor: "#810baf", // El color de la sombra (casi siempre negro)
+    shadowOffset: {
+      width: 0, // Desplazamiento horizontal (0 = centrada)
+      height: 2, // Desplazamiento vertical (hacia abajo)
+    },
+    shadowOpacity: 0.5, // La opacidad de la sombra (va de 0 a 1)
+    shadowRadius: 3.84, // Qué tan difuminada/suave se ve la sombra
+
+    // 👇 COMANDO PARA ANDROID (Mantenelo para que no se vea plano ahí)
+    elevation: 5,
   },
   productTitle: {
     fontSize: 18,
@@ -204,7 +226,5 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  loadingText: {
-    fontSize: 18,
-  },
+
 });

@@ -2,7 +2,8 @@ import "react-native-gesture-handler";
 
 import { StyleSheet } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import { NavigationContainer } from "@react-navigation/native";
+// 1. Importamos DefaultTheme
+import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import ScreenStart from "./pages/screenStart";
 
 import { Provider } from "react-redux";
@@ -18,12 +19,24 @@ export const initializeDB = async (db) => {
   } catch (error) {}
 };
 
+// 2. Creamos el Tema Oscuro (Esto cambia el fondo por defecto de React Navigation)
+const TemaOscuroBarberia = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    background: "#121212", // Gris oscuro/negro premium
+    card: "#1a1a1a",       
+    text: "#ffffff",       
+  },
+};
+
 export default function App() {
   return (
     <SafeAreaProvider>
       <SQLiteProvider databaseName="data_stock.db" onInit={initializeDB}>
         <Provider store={store}>
-          <NavigationContainer>
+          {/* 3. Le pasamos el tema al contenedor de navegación */}
+          <NavigationContainer theme={TemaOscuroBarberia}>
             <SafeAreaView style={styles.safeArea}>
               <ScreenStart />
             </SafeAreaView>
@@ -37,13 +50,13 @@ export default function App() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#f9f9f9",
+    backgroundColor: "#121212", // 4. Ponemos un color sólido real en lugar de transparente
   },
   container: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#f9f9f9",
+    backgroundColor: "#121212", // 4. Ponemos un color sólido real en lugar de transparente
     paddingHorizontal: 10,
   },
   title: {
@@ -54,6 +67,7 @@ const styles = StyleSheet.create({
     width: "100%",
     paddingHorizontal: 12,
     flexWrap: "wrap",
+    color: "#fff", // 5. Acordate de darle color blanco a las letras para que se vean
   },
   menuContainer: {
     flexDirection: "row", 
@@ -68,7 +82,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 15,
     borderRadius: 10,
-    backgroundColor: "#dadadaff",
+    backgroundColor: "#2a2a2a", // Cambié el gris claro viejo por uno más oscuro para el modo noche
   },
   activeButton: {
     backgroundColor: "#527dffff",

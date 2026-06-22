@@ -11,31 +11,13 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { database } from "../firebase";
 import { ref, push, onValue, remove, update } from "firebase/database";
 
-export default function AddProducts() {
-  const [productos, setProductos] = useState([]);
+export default function AddProducts({ datosParaLaLista, actualizarLista }) {
   const [nombre, setNombre] = useState("");
   const [precio, setPrecio] = useState("");
   const [cantidad, setCantidad] = useState("");
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [editId, setEditId] = useState(null);
   const categoriaRef = ref(database, "categoria/");
-
-  useEffect(() => {
-    const unsubscribe = onValue(categoriaRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        const lista = Object.keys(data).map((id) => ({
-          id,
-          ...data[id],
-        }));
-        setProductos(lista.reverse());
-      } else {
-        setProductos([]);
-      }
-    });
-
-    return () => unsubscribe();
-  }, []);
 
   // GUARDAR PRODUCTO
   const handleAgregar = async () => {
@@ -52,13 +34,14 @@ export default function AddProducts() {
 
     try {
       if (editId) {
-        
         const productoRef = ref(database, `categoria/${editId}`);
         await update(productoRef, nuevo);
         setEditId(null);
-       
       } else {
         await push(categoriaRef, nuevo);
+      }
+      if (actualizarLista) {
+        actualizarLista();
       }
       setNombre("");
       setPrecio("");
@@ -70,9 +53,8 @@ export default function AddProducts() {
     }
   };
 
-  
   const handleEdit = (item) => {
-    setEditId(item.id);
+   setEditId(item.keyFirebase || item.id);
     setNombre(item.nombre);
     setPrecio(item.precio.toString());
     setCantidad(item.cantidad.toString());
@@ -138,8 +120,10 @@ export default function AddProducts() {
       )}
 
       <FlatList
-        data={productos}
-        keyExtractor={(item) => item.id}
+        data={datosParaLaLista}
+        keyExtractor={(item, index) =>
+          `add-prod-${item.id}-${item.cantidad}-${index}`
+        }
         renderItem={({ item }) => (
           <View style={styles.item}>
             <Text style={styles.itemText}>
@@ -179,6 +163,16 @@ const styles = StyleSheet.create({
     backgroundColor: "#486d04cc",
     padding: 10,
     borderRadius: 8,
+
+    shadowColor: "#030a01",
+    shadowOffset: {
+      width: 4,
+      height: 8,
+    },
+    shadowOpacity: 0.5,
+    shadowRadius: 3.84,
+
+    elevation: 5,
   },
   primaryText: {
     color: "#fff",
@@ -221,8 +215,18 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     padding: 12,
     backgroundColor: "#e4e4e4ff",
-    marginTop: 10,
+    marginTop: 18,
     borderRadius: 6,
+
+    shadowColor: "#070707",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.5,
+    shadowRadius: 3.84,
+
+    elevation: 5,
   },
   itemText: { fontSize: 16 },
 });

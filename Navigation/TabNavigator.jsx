@@ -103,10 +103,10 @@ const styles = StyleSheet.create({
   tabBar: {
     borderRadius: 15,
     height: 40,
-    backgroundColor: "#eee",
+    backgroundColor: "#1a1a1a",
     borderTopWidth: 1,
     borderWidth: 1,
-    borderColor: "#000000",
+    borderColor: "#333333",
     marginBottom: 10,
     marginHorizontal: 10,
     elevation: 10,

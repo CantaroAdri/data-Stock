@@ -10,8 +10,7 @@ export const shopApi = createApi({
   endpoints: (builder) => ({
     getCategoria: builder.query({
       query: () => "categoria.json",
-      transformResponse: (res) =>
-        res ? Object.keys(res).map((id) => ({ id, ...res[id] })) : [],
+      transformResponse: (res) => res ? Object.keys(res).map((id) => ({ id, ...res[id] })) : [],
       providesTags: ["Categoria"],
     }),
 
